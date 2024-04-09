@@ -105,7 +105,7 @@ def create_domains(state_action, n, m, dim_state, dim_action):
 
   return dom_ns, dom_iv, dom_r
 
-def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, history):
+'''def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, history):
   frequency_matrix = np.zeros((len(dom_ns), len(dom_iv), len(dom_r)))
 
   for i in range(len(dom_ns)):
@@ -118,9 +118,23 @@ def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r
           if next_state[ns_idx] == dom_ns[i] and iv[iv_idx] == dom_iv[j] and np.array_equal(r, np.asarray(dom_r[k])):
             frequency_matrix[i][j][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, history):
+  frequency_matrix = np.zeros((len(dom_ns), len(dom_iv), len(dom_r)))
+
+  for t in range(len(history)):
+    curr_state, action, next_state = get_history_sample(history, t)
+    iv, r = get_remainder(state_action, curr_state, action, iv_idx)
+
+    i = np.where(dom_ns == next_state[ns_idx])[0][0]
+    j = np.where(dom_iv == iv[iv_idx])[0][0]
+    k = [_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[i][j][k] += 1/len(history)
+
   return frequency_matrix
 
-def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, history):
+'''def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, history):
   frequency_matrix = np.zeros((len(dom_ns), len(dom_r)))
 
   for i in range(len(dom_ns)):
@@ -134,9 +148,22 @@ def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, his
         if next_state[ns_idx] == dom_ns[i] and np.array_equal(r, dom_r[k]):
           frequency_matrix[i][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, history):
+  frequency_matrix = np.zeros((len(dom_ns), len(dom_r)))
+
+  for t in range(len(history)):
+    curr_state, action, next_state = get_history_sample(history, t)
+    iv, r = get_remainder(state_action, curr_state, action, iv_idx)
+
+    i = np.where(dom_ns == next_state[ns_idx])[0][0]
+    k = [_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[i][k] += 1/len(history)
+
   return frequency_matrix
 
-def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
+'''def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
   frequency_matrix = np.zeros((len(dom_iv), len(dom_r)))
 
   for j in range(len(dom_iv)):
@@ -150,10 +177,23 @@ def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
         if iv[iv_idx] == dom_iv[j] and np.array_equal(r, dom_r[k]):
           frequency_matrix[j][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
+  frequency_matrix = np.zeros((len(dom_iv), len(dom_r)))
+
+  for t in range(len(history)):
+    curr_state, action, next_state = get_history_sample(history, t)
+    iv, r = get_remainder(state_action, curr_state, action, iv_idx)
+
+    j = np.where(dom_iv == iv[iv_idx])[0][0]
+    k = [_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[j][k] += 1/len(history)
+
   return frequency_matrix
 
 
-def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
+'''def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
   frequency_array = np.zeros(len(dom_r))
 
   for k in range(len(dom_r)):
@@ -164,6 +204,18 @@ def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
 
       if np.array_equal(r, dom_r[k]):
         frequency_array[k] += 1/len(history)
+
+  return frequency_array'''
+def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
+  frequency_array = np.zeros(len(dom_r))
+
+  for t in range(len(history)):
+    curr_state, action, next_state = get_history_sample(history, t)
+    iv, r = get_remainder(state_action, curr_state, action, iv_idx)
+
+    k = [_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_array[k] += 1/len(history)
 
   return frequency_array
 

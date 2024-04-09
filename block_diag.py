@@ -47,17 +47,19 @@ def find_connected_components(adj_matrix, targets, variables):
 
 if __name__=='__main__':
     
-    with open('cmi.npy', 'rb') as f:
+    with open('cmi_large.npy', 'rb') as f:
         cmi_matrix = np.load(f)
         
     targets = ['s1_','s2_','s3_','s4_','s5_']
     variables = ['s1','s2','s3','s4','s5','a1','a2','a3']
     df = pd.DataFrame(data=cmi_matrix, index=targets, columns=variables)
     
-    thresh = 0.1
+    thresh = 0.01
     cmi_matrix_bin = cmi_matrix
     cmi_matrix_bin[cmi_matrix > thresh] = 1
     cmi_matrix_bin[cmi_matrix <= thresh] = 0
+    print(cmi_matrix_bin)
     
     components = find_connected_components(cmi_matrix_bin, targets, variables)
+    print(components)
 
