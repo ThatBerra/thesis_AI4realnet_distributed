@@ -61,7 +61,7 @@ class FactoredMDP_Env(gym.Env):
 
     next_state = self.get_next_state(action)
 
-    h_entry = [self.current_state, action, next_state]
+    h_entry = np.concatenate((next_state, self.current_state, action))
 
     self.history.append(h_entry)
     self.current_state = next_state
@@ -105,6 +105,17 @@ def create_domains(state_action, n, m, dim_state, dim_action):
 
   return dom_ns, dom_iv, dom_r
 
+def get_relative_indices(state_action, ns, iv, dim_state, dim_action):
+  if state_action == 'state':
+    iv_idx = dim_state + iv
+  if state_action == 'action':
+    iv_idx = 2 * dim_state + iv
+
+  k_idx = [x for x in np.arange(dim_state, 2*dim_state+dim_action) if x != iv_idx]
+  #couple_indices = np.array([ns, iv_idx])
+
+  return ns, iv_idx, k_idx
+
 '''def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, history):
   frequency_matrix = np.zeros((len(dom_ns), len(dom_iv), len(dom_r)))
 
@@ -118,7 +129,7 @@ def create_domains(state_action, n, m, dim_state, dim_action):
           if next_state[ns_idx] == dom_ns[i] and iv[iv_idx] == dom_iv[j] and np.array_equal(r, np.asarray(dom_r[k])):
             frequency_matrix[i][j][k] += 1/len(history)
 
-  return frequency_matrix'''
+  return frequency_matrix
 def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, history):
   frequency_matrix = np.zeros((len(dom_ns), len(dom_iv), len(dom_r)))
 
@@ -132,6 +143,26 @@ def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r
 
     frequency_matrix[i][j][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r, dim_state, dim_action, history):
+  frequency_matrix = np.zeros((len(dom_ns), len(dom_iv), len(dom_r)))
+
+  ns, iv, k_idx = get_relative_indices(state_action, ns_idx, iv_idx, dim_state, dim_action)
+  couple_idx = np.array([ns, iv])
+  indices = np.concatenate((couple_idx, k_idx))
+
+  unique_transactions, counts = np.unique(np.asarray(history)[:, indices], return_counts=True, axis=0)
+  for arr, count in zip(unique_transactions, counts):
+    ns_value = arr[0]
+    iv_value = arr[1]
+    r = arr[2:]
+
+    i = np.where(dom_ns == ns_value)[0][0]
+    j = np.where(dom_iv == iv_value)[0][0]
+    k =[_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[i][j][k] = count/len(history)
+  
   return frequency_matrix
 
 '''def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, history):
@@ -148,7 +179,7 @@ def compute_3var_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_iv, dom_r
         if next_state[ns_idx] == dom_ns[i] and np.array_equal(r, dom_r[k]):
           frequency_matrix[i][k] += 1/len(history)
 
-  return frequency_matrix'''
+  return frequency_matrix
 def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, history):
   frequency_matrix = np.zeros((len(dom_ns), len(dom_r)))
 
@@ -161,6 +192,24 @@ def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, his
 
     frequency_matrix[i][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, dim_state, dim_action, history):
+  frequency_matrix = np.zeros((len(dom_ns), len(dom_r)))
+
+  ns, iv, k_idx = get_relative_indices(state_action, ns_idx, iv_idx, dim_state, dim_action)
+  indices = np.concatenate((np.array([ns]), k_idx))
+
+  unique_transactions, counts = np.unique(np.asarray(history)[:, indices], return_counts=True, axis=0)
+
+  for arr, count in zip(unique_transactions, counts):
+    ns_value = arr[0]
+    r = arr[1:]
+
+    i = np.where(dom_ns == ns_value)[0][0]
+    k =[_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[i][k] = count/len(history)
+  
   return frequency_matrix
 
 '''def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
@@ -177,7 +226,7 @@ def compute_2var_ns_frequencies(state_action, ns_idx, iv_idx, dom_ns, dom_r, his
         if iv[iv_idx] == dom_iv[j] and np.array_equal(r, dom_r[k]):
           frequency_matrix[j][k] += 1/len(history)
 
-  return frequency_matrix'''
+  return frequency_matrix
 def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
   frequency_matrix = np.zeros((len(dom_iv), len(dom_r)))
 
@@ -190,6 +239,24 @@ def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
 
     frequency_matrix[j][k] += 1/len(history)
 
+  return frequency_matrix'''
+def compute_2var_cv_frequencies(state_action, ns_idx, iv_idx, dom_iv, dom_r, dim_state, dim_action, history):
+  frequency_matrix = np.zeros((len(dom_iv), len(dom_r)))
+
+  ns, iv, k_idx = get_relative_indices(state_action, ns_idx, iv_idx, dim_state, dim_action)
+  indices = np.concatenate((np.array([iv]), k_idx))
+
+  unique_transactions, counts = np.unique(np.asarray(history)[:, indices], return_counts=True, axis=0)
+
+  for arr, count in zip(unique_transactions, counts):
+    iv_value = arr[0]
+    r = arr[1:]
+
+    j = np.where(dom_iv == iv_value)[0][0]
+    k =[_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), r)][0]
+
+    frequency_matrix[j][k] = count/len(history)
+  
   return frequency_matrix
 
 
@@ -205,7 +272,7 @@ def compute_2var_cv_frequencies(state_action, iv_idx, dom_iv, dom_r, history):
       if np.array_equal(r, dom_r[k]):
         frequency_array[k] += 1/len(history)
 
-  return frequency_array'''
+  return frequency_array
 def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
   frequency_array = np.zeros(len(dom_r))
 
@@ -217,6 +284,19 @@ def compute_remainder_marginal(state_action, iv_idx, dom_r, history):
 
     frequency_array[k] += 1/len(history)
 
+  return frequency_array'''
+def compute_remainder_marginal(state_action, ns_idx, iv_idx, dom_r, dim_state, dim_action, history):
+  frequency_array = np.zeros(len(dom_r))
+
+  ns, iv, k_idx = get_relative_indices(state_action, ns_idx, iv_idx, dim_state, dim_action)
+
+  unique_transactions, counts = np.unique(np.asarray(history)[:, k_idx], return_counts=True, axis=0)
+
+  for arr, count in zip(unique_transactions, counts):
+    k =[_ for _, x in enumerate(dom_r) if np.array_equal(np.asarray(dom_r[_]), arr)][0]
+
+    frequency_array[k] = count/len(history)
+  
   return frequency_array
 
 
@@ -234,10 +314,10 @@ def compute_cmi_matrix(n, m, dim_state, dim_action, history):
       for cs in range(n):
         sti = time.time()  
         print(f'Input variable: state {cs}/{n}')  
-        s_3var_freq = compute_3var_frequencies(iv_label, ns, cs, dom_ns, dom_iv, dom_r, history)
-        ns_2v_freq = compute_2var_ns_frequencies(iv_label, ns, cs, dom_ns, dom_r, history)
-        cs_2v_freq = compute_2var_cv_frequencies(iv_label, cs, dom_iv, dom_r, history)
-        remainder_marginal = compute_remainder_marginal(iv_label, cs, dom_r, history)
+        s_3var_freq = compute_3var_frequencies(iv_label, ns, cs, dom_ns, dom_iv, dom_r, n, m, history)
+        ns_2v_freq = compute_2var_ns_frequencies(iv_label, ns, cs, dom_ns, dom_r, n, m, history)
+        cs_2v_freq = compute_2var_cv_frequencies(iv_label, ns, cs, dom_iv, dom_r, n, m, history)
+        remainder_marginal = compute_remainder_marginal(iv_label, ns, cs, dom_r, n, m, history)
         print(f'Computed probabilities. Elapsed time: {round(time.time()-sti, 2)} s')
         
         s = 0
@@ -253,10 +333,10 @@ def compute_cmi_matrix(n, m, dim_state, dim_action, history):
       for a in range(m):
         sti = time.time() 
         print(f'Input variable: action {a}/{m}')  
-        a_3var_freq = compute_3var_frequencies(iv_label, ns, a, dom_ns, dom_iv, dom_r, history)
-        ns_2v_freq = compute_2var_ns_frequencies(iv_label, ns, a, dom_ns, dom_r, history)
-        a_2v_freq = compute_2var_cv_frequencies(iv_label, a, dom_iv, dom_r, history)
-        remainder_marginal = compute_remainder_marginal(iv_label, a, dom_r, history)
+        a_3var_freq = compute_3var_frequencies(iv_label, ns, a, dom_ns, dom_iv, dom_r, n, m, history)
+        ns_2v_freq = compute_2var_ns_frequencies(iv_label, ns, a, dom_ns, dom_r, n, m, history)
+        a_2v_freq = compute_2var_cv_frequencies(iv_label, ns, a, dom_iv, dom_r, n, m, history)
+        remainder_marginal = compute_remainder_marginal(iv_label, ns, a, dom_r, n, m, history)
         print(f'Computed probabilities. Elapsed time: {round(time.time()-sti, 2)} s')
         
         s = 0
