@@ -303,6 +303,7 @@ def compute_remainder_marginal(state_action, ns_idx, iv_idx, dom_r, dim_state, d
 def compute_cmi_matrix(n, m, dim_state, dim_action, history):
     
     MI = np.zeros((n, n+m))
+    
     lp = 1e-18
     st = time.time()
     for ns in range(n):
@@ -324,9 +325,12 @@ def compute_cmi_matrix(n, m, dim_state, dim_action, history):
         for i in range(len(dom_ns)):
           for j in range(len(dom_iv)):
             for k in range(len(dom_r)):
+              l = max(s_3var_freq[i][j][k] * remainder_marginal[k], lp)/(max(cs_2v_freq[j][k] * ns_2v_freq[i][k], lp))  
+              w = s_3var_freq[i][j][k] * np.log(max(s_3var_freq[i][j][k] * remainder_marginal[k], lp)/(max(cs_2v_freq[j][k] * ns_2v_freq[i][k], lp)))
               s += s_3var_freq[i][j][k] * np.log(max(s_3var_freq[i][j][k] * remainder_marginal[k], lp)/(max(cs_2v_freq[j][k] * ns_2v_freq[i][k], lp)))
 
         MI[ns][cs] = s
+        
     
       iv_label = 'action'
       dom_ns, dom_iv, dom_r = create_domains(iv_label, n, m, dim_state, dim_action)
@@ -433,7 +437,7 @@ if __name__=='__main__':
     
     transition_prob = gen_global_transition_prob(blocks, dim_state, dim_action, n, m)
     
-    H = 100000
+    H = 1000000
 
     done = False
     env = FactoredMDP_Env(transition_prob, n, m, H, state_range, action_range)
