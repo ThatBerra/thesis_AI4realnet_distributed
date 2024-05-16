@@ -27,18 +27,18 @@ class Bus_Forcing_Agent(BaseAgent):
     def __init__(self, action_space, blocks):
         BaseAgent.__init__(self, action_space)
         
-        self.distr_agents = []
-        for block in blocks:
-            agent = Sub_Agent(block)
-            self.distr_agents.append(agent)
+        #self.distr_agents = []
+        #for block in blocks:
+            #agent = Sub_Agent(block)
+            #self.distr_agents.append(agent)
             
             
     def act(self, obs, reward, done=False):
         action = []
-        for agent in self.distr_agents:
-            distr_action = agent.act(obs, reward, done)
-            for act in distr_action:
-                action.append(act)
+        #for agent in self.distr_agents:
+            #distr_action = agent.act(obs, reward, done)
+            #for act in distr_action:
+                #action.append(act)
         
         return action
         

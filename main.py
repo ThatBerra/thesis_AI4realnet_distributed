@@ -13,9 +13,13 @@ import cmi_computation as cmi
 
 if __name__=='__main__':
     
-    env_name = "rte_case5_example"
-    n_epochs = 2500
-    threshold = 0.01
+    #with open('grid2op_5000_hoeffding.npy', 'rb') as f:
+        #cmi_m = np.load(f)
+    
+    env_name = "l2rpn_case14_sandbox"
+    #env_name = "rte_case5_example"
+    n_epochs = 10
+    #threshold = 0.01
 
     history, n, m = de.run(env_name, n_epochs)
     
@@ -32,5 +36,6 @@ if __name__=='__main__':
         
     block_matrix, blocks = bd.block_diagonalization(cmi_matrix, targets, variables, threshold)'''
     
-    with open('attempt_on_grid2op.npy', 'wb') as f:
+    with open('grid2op_case14_gen4_10.npy', 'wb') as f:
         np.save(f, cmi_matrix)
+        

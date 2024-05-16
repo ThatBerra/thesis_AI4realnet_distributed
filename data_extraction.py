@@ -8,7 +8,6 @@ Created on Wed Apr 24 15:00:08 2024
 import grid2op
 from grid2op.Agent import RandomAgent
 from grid2op.Reward import CloseToOverflowReward
-from simulator_1 import FactoredMDP_Env_prof
 import numpy as np
 import math
 
@@ -52,33 +51,43 @@ def run(env_name, epochs):
     
     n = len(obs.rho)
     action = agent.act(obs, reward, done)
-    m = len(action._set_topo_vect)
+    #m = 2 * len(action.redispatch)
+    m = 1
 
     history = []
+    epoch = 0
     # and now the loop starts
     # it will only used the chronics selected
     for i in range(episode_count):
-        _ = env.chronics_handler.sample_next_chronics()
+        epoch += 1
+        #_ = env.chronics_handler.sample_next_chronics()
         ob = env.reset()
         
-        rho = discretize(ob.rho, bin_size)
+        rho = ob.rho
 
         # now play the episode as usual
         while True:
             H += 1
             
+            print(f'iteration n: {H} -> epoch n {epoch}')
             curr_rho = rho
-            action = agent.act(ob, reward, done)
+             #action = agent.act(ob, reward, done)
+            action = env.action_space()
+            #obj = np.random.randint(0, obs.dim_topo)
+            #bus = np.random.randint(0, 2)
+            curt = np.random.rand()
+            action.curtail = [(4, curt)]
             
             ob, reward, done, info = env.step(action)
-            rho = discretize(ob.rho, bin_size)
-            print(reward)
-            
-            history_entry = np.concatenate((rho, curr_rho, action._set_topo_vect))
+            rho = ob.rho
+
+            ns_cs = np.concatenate((rho, curr_rho))
+            history_entry = np.append(ns_cs, action.curtail[4])
             history.append(history_entry)
             
             total_reward += reward
             if done:
                 # in this case the episode is over
+                print(f"BREAKDOWN {epoch}")
                 break
     return history, n, m
