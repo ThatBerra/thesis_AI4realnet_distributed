@@ -365,7 +365,7 @@ if __name__=='__main__':
         [1, 0, 1, 0, 1, 1, 1, 0]
         ])
    
-    transition_prob = gen_global_transition_prob(blocks, dim_state, dim_action, n, m)
+    #transition_prob = gen_global_transition_prob(blocks, dim_state, dim_action, n, m)
     
     H = 10000
 

@@ -11,7 +11,7 @@ def dfs(adj_matrix, node, targets, variables, visited_r, visited_c, component, r
     #we iterate on the columns to check for possible neighbours
     for neighbour in range(adj_matrix.shape[1]):
       #if a non visited neighbour is found we call the recursive function on it
-      if adj_matrix[node][neighbour] == 1 and not visited_c[neighbour]:
+      if adj_matrix[node][neighbour] == True and not visited_c[neighbour]:
         dfs(adj_matrix, neighbour, targets, variables, visited_r, visited_c, component, rc='c')
   else:
     #same as before but keep in mind that we were passed a column
@@ -19,7 +19,7 @@ def dfs(adj_matrix, node, targets, variables, visited_r, visited_c, component, r
     component.append(variables[node])
 
     for neighbour in range(adj_matrix.shape[0]):
-      if adj_matrix[neighbour][node] == 1 and not visited_r[neighbour]:
+      if adj_matrix[neighbour][node] == True and not visited_r[neighbour]:
         dfs(adj_matrix, neighbour, targets, variables, visited_r, visited_c, component, rc='r')
         
 
@@ -48,8 +48,8 @@ def find_connected_components(adj_matrix, targets, variables):
 def block_diagonalization(matrix, targets, variables, thres):
     
     matrix_bin = matrix.copy()
-    matrix_bin[matrix > thresh] = 1
-    matrix_bin[matrix <= thresh] = 0
+    matrix_bin[matrix > thres] = 1
+    matrix_bin[matrix <= thres] = 0
     
     components = find_connected_components(matrix_bin, targets, variables)
     
@@ -65,5 +65,5 @@ def block_diagonalization(matrix, targets, variables, thres):
                 
     block_df = df.loc[rearranged_targets,rearranged_variables]
     
-    return block_df.to_numpy(), components
+    return block_df, block_df.to_numpy(), components
 

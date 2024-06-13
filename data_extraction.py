@@ -14,6 +14,9 @@ import math
 from itertools import product
 import time
 
+SEED = 24
+np.random.seed(SEED)
+
 def discretize(vec, bin_size = 0.05):
     discretized_values = np.zeros(len(vec))
     
@@ -29,19 +32,18 @@ def discretize(vec, bin_size = 0.05):
         
     return discretized_values
 
-def run(env_name, epochs):
+def run(env_name, n_samples, sub_id):
     env = grid2op.make(env_name, reward_class=CloseToOverflowReward, test=True)
     obs = env.reset()
 
     agent = RandomAgent(env.action_space)
-    env.seed(0)  # for reproducible experiments
-    bin_size = 0.05
+    env.seed(SEED)  # for reproducible experiments
+
     
     ###################################
     env.chronics_handler.set_chunk_size(100)
     ###################################
 
-    episode_count = epochs  # i want to make lots of episode
 
     # i initialize some useful variables
     H = 0
@@ -51,16 +53,19 @@ def run(env_name, epochs):
     
     n = len(obs.rho)
     action = agent.act(obs, reward, done)
-    #m = 2 * len(action.redispatch)
     m = 1
+    
+    act_list = env.action_space.get_all_unitary_topologies_set(env.action_space, sub_id=sub_id)
+    if len(act_list) == 0:
+        return [], n, m, 0
 
     history = []
-    epoch = 0
+    
+    st = time.time()
     # and now the loop starts
     # it will only used the chronics selected
-    for i in range(episode_count):
-        epoch += 1
-        #_ = env.chronics_handler.sample_next_chronics()
+    #for i in range(episode_count):
+    while H < n_samples:
         ob = env.reset()
         
         rho = ob.rho
@@ -69,25 +74,32 @@ def run(env_name, epochs):
         while True:
             H += 1
             
-            print(f'iteration n: {H} -> epoch n {epoch}')
             curr_rho = rho
-             #action = agent.act(ob, reward, done)
-            action = env.action_space()
+            #action = agent.act(ob, reward, done)
+            #action = env.action_space()
             #obj = np.random.randint(0, obs.dim_topo)
             #bus = np.random.randint(0, 2)
-            curt = np.random.rand()
-            action.curtail = [(4, curt)]
+            #redisp = -5 + 10*np.random.rand()
+            #action.redispatch = [(0, redisp)]
+            
+            act = np.random.randint(0, len(act_list))
+            action = act_list[act]
             
             ob, reward, done, info = env.step(action)
             rho = ob.rho
 
             ns_cs = np.concatenate((rho, curr_rho))
-            history_entry = np.append(ns_cs, action.curtail[4])
+            history_entry = np.append(ns_cs, (act+1)/len(act_list))
             history.append(history_entry)
+            #history.append(ns_cs)
             
             total_reward += reward
-            if done:
-                # in this case the episode is over
-                print(f"BREAKDOWN {epoch}")
+            if done or H>=n_samples:
                 break
-    return history, n, m
+    print('-----------------------------------------')    
+    print('EXTRACTED DATA')
+    print(f'Total time: {round(time.time() - st, 2)} s')
+    t = round(time.time()-st, 2)
+    
+    return history, n, m, t
+

@@ -6,6 +6,7 @@ Created on Wed Apr 24 15:05:37 2024
 """
 
 import numpy as np
+import multiprocessing as mp
 import math
 import mixed
 
@@ -76,14 +77,16 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
   ns, iv, k_idx = get_relative_indices(iv_label, ns_idx, iv_idx, n, m)
   
   ns_vector = history[:, ns].reshape((len(history),1))
-  sa_vector = history[:, n:]
-  k_vector = history[:, k_idx]
+  iv_vector = history[:, iv].reshape((len(history),1))
+  #sa_vector = history[:, n:]
+  #k_vector = history[:, k_idx]
   
-  mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
-  mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
+  #mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
+  #mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
+  mi_ns_iv = mixed.Mixed_KSG(ns_vector, iv_vector, k=int(len(history)/20))
 
-  return mi_ns_sa - mi_ns_k
-
+  #return mi_ns_sa - mi_ns_k
+  return mi_ns_iv
 
 def compute_cmi_matrix(n, m, history):
     
@@ -118,3 +121,43 @@ def compute_cmi_matrix(n, m, history):
     print('-----------------------------------------')    
     print(f'Total time: {round(time.time() - st, 2)} s')
     return MI
+
+def compute_MI_entry_wrapper(args):
+    return compute_MI_entry(*args)
+
+def compute_mi_matrix_parallel(n, m, history):
+    MI = np.zeros((n, n+m))
+    
+    history = np.asanyarray(history)
+    
+    st = time.time()
+    
+    pool = mp.Pool(mp.cpu_count())
+    
+    args_list = []
+    for ns in range(n):
+        #iv_label = 'state'
+        #for cs in range(n):
+            #args_list.append((iv_label, ns, cs, n, m, history))
+
+        iv_label = 'action'
+        for a in range(m):
+            args_list.append((iv_label, ns, a, n, m, history))
+        
+    results = pool.map(compute_MI_entry_wrapper, args_list)
+    
+    i = 0
+    for ns in range(n):
+        #for cs in range(n):
+            #MI[ns][cs] = results[i]
+            #i += 1
+
+        for a in range(m):
+            MI[ns][a] = results[i]
+            i += 1
+        
+    print('-----------------------------------------')    
+    print(f'Total time: {round(time.time() - st, 2)} s')
+    
+    t = round(time.time() - st, 2)
+    return MI, t

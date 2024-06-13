@@ -12,30 +12,36 @@ import cmi_computation as cmi
 #import block_diag as bd
 
 if __name__=='__main__':
-    
-    #with open('grid2op_5000_hoeffding.npy', 'rb') as f:
-        #cmi_m = np.load(f)
-    
+       
     env_name = "l2rpn_case14_sandbox"
     #env_name = "rte_case5_example"
-    n_epochs = 10
-    #threshold = 0.01
+    n_samples = 60000
+    
+    mi_matrix = np.zeros((20, 14))
+    extraction_times = []
+    computation_times = []
+    for i in range(14):
+        history, n, m, t = de.run(env_name, n_samples, i)
+        extraction_times.append(t)
+        
+        if len(history) > 0:
+            mi, t = cmi.compute_mi_matrix_parallel(n, m, history)
+            mi = mi[:,0]
+        else:
+            mi = np.zeros(20)
+            t = 0
+        
+        mi_matrix[:,i] = mi
+        computation_times.append(t)
+        
+    with open('mi.npy', 'wb') as f:
+        np.save(f, mi_matrix)
+        
+    with open('extract_times.npy', 'wb') as f:
+        np.save(f, extraction_times)
+        
+    with open('compute_times.npy', 'wb') as f:
+        np.save(f, extraction_times)
 
-    history, n, m = de.run(env_name, n_epochs)
     
-    cmi_matrix = cmi.compute_cmi_matrix(n, m, history)
-    
-    '''targets = []
-    variables = []
-    for i in range(n):
-        targets.append('s{}\''.format(i))
-        variables.append('s{}'.format(i))
-        
-    for i in range(m):
-        variables.append('a{}'.format(i))
-        
-    block_matrix, blocks = bd.block_diagonalization(cmi_matrix, targets, variables, threshold)'''
-    
-    with open('grid2op_case14_gen4_10.npy', 'wb') as f:
-        np.save(f, cmi_matrix)
         
