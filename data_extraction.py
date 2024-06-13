@@ -55,9 +55,11 @@ def run(env_name, n_samples, sub_id):
     action = agent.act(obs, reward, done)
     m = 1
     
-    act_list = env.action_space.get_all_unitary_topologies_set(env.action_space, sub_id=sub_id)
-    if len(act_list) == 0:
+    connections = env.action_space.sub_info[sub_id]
+    if connections <= 3:
         return [], n, m, 0
+    
+    act_list = env.action_space.get_all_unitary_topologies_set(env.action_space, sub_id=sub_id)
 
     history = []
     
