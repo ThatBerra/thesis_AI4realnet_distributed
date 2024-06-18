@@ -14,7 +14,7 @@ import math
 from itertools import product
 import time
 
-SEED = 24
+SEED = 2404
 np.random.seed(SEED)
 
 def discretize(vec, bin_size = 0.05):
@@ -32,11 +32,10 @@ def discretize(vec, bin_size = 0.05):
         
     return discretized_values
 
-def run(env_name, n_samples, sub_id):
+def run(env_name, n_samples):
     env = grid2op.make(env_name, reward_class=CloseToOverflowReward, test=True)
     obs = env.reset()
 
-    agent = RandomAgent(env.action_space)
     env.seed(SEED)  # for reproducible experiments
 
     
@@ -52,15 +51,13 @@ def run(env_name, n_samples, sub_id):
     total_reward = 0
     
     n = len(obs.rho)
-    # action = agent.act(obs, reward, done)
-    m = 1
-    
-    connections = env.action_space.sub_info[sub_id]
-    if connections <= 3:
-        return [], n, m, 0
-    
-    act_list = env.action_space.get_all_unitary_topologies_set(env.action_space, sub_id=sub_id)
+    m = obs.n_sub
 
+    conf_subs = []
+    for i in range(m): 
+        if env.action_space.sub_info[i] > 3:
+            conf_subs.append(i)
+    
     history = []
     
     st = time.time()
@@ -83,12 +80,19 @@ def run(env_name, n_samples, sub_id):
             #bus = np.random.randint(0, 2)
             #redisp = -5 + 10*np.random.rand()
             #action.redispatch = [(0, redisp)]
-            
+            sub_id = np.random.randint(0, len(conf_subs))
+            sub = conf_subs[sub_id]
+
+            act_list = env.action_space.get_all_unitary_topologies_set(env.action_space, sub_id=sub)
+
             act = np.random.randint(0, len(act_list))
             action = act_list[act]
             
             ob, reward, done, info = env.step(action)
             rho = ob.rho
+
+            action_vector = np.zeros(m)
+            action_vector[sub] = act+1
 
             ns_cs = np.concatenate((rho, curr_rho))  # s', s
             history_entry = np.append(ns_cs, (act+1)/len(act_list))  # s', s', normalized a

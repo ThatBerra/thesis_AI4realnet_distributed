@@ -84,6 +84,7 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
   #mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
   #mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
   mi_ns_iv = mixed.Mixed_KSG(ns_vector, iv_vector, k=int(len(history)/20))
+  print(f'Computed probabilities.Next state {ns}/{n}. Input variable: {iv_idx}')  
 
   #return mi_ns_sa - mi_ns_k
   return mi_ns_iv
@@ -136,9 +137,9 @@ def compute_mi_matrix_parallel(n, m, history):
     
     args_list = []
     for ns in range(n):
-        #iv_label = 'state'
-        #for cs in range(n):
-            #args_list.append((iv_label, ns, cs, n, m, history))
+        iv_label = 'state'
+        for cs in range(n):
+            args_list.append((iv_label, ns, cs, n, m, history))
 
         iv_label = 'action'
         for a in range(m):
@@ -148,12 +149,12 @@ def compute_mi_matrix_parallel(n, m, history):
     
     i = 0
     for ns in range(n):
-        #for cs in range(n):
-            #MI[ns][cs] = results[i]
-            #i += 1
+        for cs in range(n):
+            MI[ns][cs] = results[i]
+            i += 1
 
         for a in range(m):
-            MI[ns][a] = results[i]
+            MI[ns][n+a] = results[i]
             i += 1
         
     print('-----------------------------------------')    

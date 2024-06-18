@@ -46,7 +46,7 @@ if __name__=='__main__':
     NB_CORE = mp.cpu_count() 
     PATH_SAVE = "agents_log"  # store the results in the "agents_log" folder
 
-    kwargs_converter = {"sub_id" : 2}
+    kwargs_converter = {}
     agent = TopologyRandomAgent(env.action_space, **kwargs_converter)
 
     runner = Runner(**env.get_params_for_runner(), agentClass=None, agentInstance=agent)

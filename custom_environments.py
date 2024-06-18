@@ -12,7 +12,6 @@ import math
 
 import data_extraction as de
 import cmi_computation as cmi
-import cmi_mixture as mix
 import mixed
 
 from itertools import product
@@ -367,21 +366,22 @@ if __name__=='__main__':
    
     #transition_prob = gen_global_transition_prob(blocks, dim_state, dim_action, n, m)
     
-    H = 10000
+    H = 100000
 
     done = False
     env = FactoredMDP_prof_Env(relation_matrix, n, m, H, state_range, action_range)
     
     while not done:
-      #action = np.random.random(size=m)
-      action = np.random.randint(action_range[0], action_range[1], size=m)
+      action = np.random.random(size=m)
+      #action = np.random.randint(action_range[0], action_range[1], size=m)
       next_observation, reward, done = env.step(action)
+      
+    print('EXTRACTED DATA')
     
     history = env._get_history()  # H triples (s, a, s')
     
-    k=int(np.sqrt(H))
     #cmi_matrix = mix.compute_cmi_mixture(history, n, m, k)
-    cmi_matrix = compute_cmi_matrix(n, m, np.asarray(history))
+    cmi_matrix, t = cmi.compute_mi_matrix_parallel(n, m, np.asarray(history))
     
     '''targets = []
     variables = []
@@ -394,5 +394,5 @@ if __name__=='__main__':
         
     block_matrix, blocks = bd.block_diagonalization(cmi_matrix, targets, variables, threshold)'''
     
-    with open('cmi_custom1_01_gao_10K.npy', 'wb') as f:
+    with open('paper_data/cmi_custom1_cont_gao_100K.npy', 'wb') as f:
         np.save(f, cmi_matrix)
