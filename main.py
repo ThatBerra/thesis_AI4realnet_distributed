@@ -20,28 +20,14 @@ if __name__=='__main__':
     mi_matrix = np.zeros((20, 14))
     extraction_times = []
     computation_times = []
-    for i in range(14):
-        history, n, m, t = de.run(env_name, n_samples, i)
-        extraction_times.append(t)
-        
-        if len(history) > 0:
-            mi, t = cmi.compute_mi_matrix_parallel(n, m, history)
-            mi = mi[:,0]
-        else:
-            mi = np.zeros(20)
-            t = 0
-        
-        mi_matrix[:,i] = mi
-        computation_times.append(t)
+
+    history, n, m, t = de.run(env_name, n_samples)
+
+    mi_matrix = cmi.compute_mi_matrix_parallel(n, m, np.asarray(history))
         
     with open('mi.npy', 'wb') as f:
         np.save(f, mi_matrix)
         
-    with open('extract_times.npy', 'wb') as f:
-        np.save(f, extraction_times)
-        
-    with open('compute_times.npy', 'wb') as f:
-        np.save(f, extraction_times)
 
     
         

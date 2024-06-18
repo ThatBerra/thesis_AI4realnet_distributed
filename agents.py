@@ -1,45 +1,33 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Apr 25 09:52:59 2024
+from grid2op.Agent.agentWithConverter import AgentWithConverter
+from grid2op.Converter.Converters import Converter
 
-@author: david
-"""
+class SubIdToTopologyAct(Converter):
 
-from grid2op.Agent import BaseAgent
-import numpy as np
+    def __init__(self, action_space):
+        Converter.__init__(self, action_space)
+        self.__class__ = SubIdToTopologyAct.init_grid(action_space)
+        self.all_actions = []
+        self.n = 1
+        self._init_size = action_space.size()
+        self.kwargs_init = {}
 
-class Sub_Agent():
-    def __init__(self, variables):
-        self.elements_ids = variables
-        
-    def act(self, obs, reward, done=False):
-        act_list = []
-        for i in self.elements_ids:
-            bus = np.random.randint(0, 2)
-            element_tuple = (i, bus)
-            act_list.append(element_tuple)
-        
-    def update():
-        print('Nothing to do here for now')
-    
+    def init_converter(self, all_actions=None, **kwargs):
+        self.kwargs_init = kwargs
+        self.all_actions = self.get_all_unitary_topologies_set(self, **kwargs)
+        self.n = len(self.all_actions)
 
-class Bus_Forcing_Agent(BaseAgent):
-    def __init__(self, action_space, blocks):
-        BaseAgent.__init__(self, action_space)
-        
-        #self.distr_agents = []
-        #for block in blocks:
-            #agent = Sub_Agent(block)
-            #self.distr_agents.append(agent)
-            
-            
-    def act(self, obs, reward, done=False):
-        action = []
-        #for agent in self.distr_agents:
-            #distr_action = agent.act(obs, reward, done)
-            #for act in distr_action:
-                #action.append(act)
-        
-        return action
-        
-        
+    def convert_act(self, encoded_act):
+        return self.all_actions[encoded_act]
+
+class TopologyRandomAgent(AgentWithConverter):
+    def __init__(
+        self, action_space, action_space_converter=SubIdToTopologyAct, **kwargs_converter
+    ):
+        AgentWithConverter.__init__(
+            self, action_space, action_space_converter, **kwargs_converter
+        )
+        # print('Hey there')
+
+    def my_act(self, transformed_observation, reward, done=False):
+        my_int = self.space_prng.randint(self.action_space.n)
+        return my_int
