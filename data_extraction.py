@@ -52,7 +52,7 @@ def run(env_name, n_samples, sub_id):
     total_reward = 0
     
     n = len(obs.rho)
-    action = agent.act(obs, reward, done)
+    # action = agent.act(obs, reward, done)
     m = 1
     
     connections = env.action_space.sub_info[sub_id]
@@ -90,8 +90,8 @@ def run(env_name, n_samples, sub_id):
             ob, reward, done, info = env.step(action)
             rho = ob.rho
 
-            ns_cs = np.concatenate((rho, curr_rho))
-            history_entry = np.append(ns_cs, (act+1)/len(act_list))
+            ns_cs = np.concatenate((rho, curr_rho))  # s', s
+            history_entry = np.append(ns_cs, (act+1)/len(act_list))  # s', s', normalized a
             history.append(history_entry)
             #history.append(ns_cs)
             
