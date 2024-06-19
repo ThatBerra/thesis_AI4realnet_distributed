@@ -4,12 +4,13 @@ from grid2op.Episode import EpisodeData
 import os
 
 if __name__=='__main__':
-    path = "C:\\Users\\david\OneDrive\\Documenti\\uni\\Thesis\\Code\\thesis_AI4realnet_distributed-1\\agents_log_case14\\agents_log_case14_25k"
+
+
+    path = "./case14_test"
     env = grid2op.make("l2rpn_case14_sandbox")
     #env = grid2op.make("l2rpn_wcci_2022")
-    obs = env.reset()
 
-    full_obs_dim = dict(zip(obs.attr_list_vect, env.observation_space.shape))
+    full_obs_dim = dict(zip(env.observation_space.attr_list_vect, env.observation_space.shape))
 
     o_start_idx = 0
     o_end_idx = 0
@@ -78,6 +79,14 @@ if __name__=='__main__':
         sub_act = actions[:, sub_start[sub_id]:sub_end[sub_id]]
         u_act, act_to_int = np.unique(sub_act, axis=0, return_inverse=True)
         actions_by_sub[:, sub_id] = act_to_int/u_act.shape[0]+1
+
+    next_state = np.array(next_state)
+    curr_state = np.array(curr_state)
+
+    history = np.append(next_state, curr_state, axis=1)
+    history = np.append(history, actions_by_sub,axis=1)
+
+    print(history.shape)
 
     
 
