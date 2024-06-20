@@ -71,7 +71,7 @@ if __name__=='__main__':
         write = csv.writer(f)
         write.writerows(res)  # (id_chron, name_chron, float(cum_reward), nb_time_step, max_ts)
 
-    with open(os.path.join(PATH_SAVE,'time.txt'), 'w') as f:
-        f.write(str(round(end_time-st_time, 2)))
+    with open(os.path.join(PATH_SAVE,'info.txt'), 'w') as f:
+        f.write(",".join([str(round(end_time-st_time, 2)), str(seed), str(round(end_time-st_time, 2))]))
 
     print(round(end_time-st_time, 2))

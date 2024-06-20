@@ -2,13 +2,15 @@ import numpy as np
 import grid2op
 from grid2op.Episode import EpisodeData
 import os
+import time
+from tqdm import tqdm
 
 if __name__=='__main__':
 
 
-    path = "./case14_test"
-    env = grid2op.make("l2rpn_case14_sandbox")
-    #env = grid2op.make("l2rpn_wcci_2022")
+    path = "./wcci2022_30k"
+    # env = grid2op.make("l2rpn_case14_sandbox")
+    env = grid2op.make("l2rpn_wcci_2022")
 
     full_obs_dim = dict(zip(env.observation_space.attr_list_vect, env.observation_space.shape))
 
@@ -50,24 +52,42 @@ if __name__=='__main__':
     next_state = []
     curr_state = []
     actions = []
-    for dire in os.listdir(path):
 
-        d_path = os.path.join(path, dire)
-        if os.path.isdir(d_path):
-            o_path = os.path.join(d_path, 'observations.npz')
-            a_path = os.path.join(d_path, 'actions.npz')
+    list_dir = os.listdir(path)[:20]
+    num_folders = len(list_dir)
 
-            if dire != '0225':
-                obs = np.load(o_path)['data']
-                obs = obs[~np.isnan(obs).all(axis=1)]
-                obs = obs[:, o_start_idx:o_end_idx]
-                curr_state.extend(obs[:-1])
-                next_state.extend(obs[1:])
+    st_time = time.time()
+    print(f"\nPath = {path}. Reading data from {num_folders} folders")
 
-                acts = np.load(a_path)['data']
-                acts = acts[~np.isnan(acts).all(axis=1)]
-                acts = acts[:, a_start_idx:a_end_idx]
-                actions.extend(acts)
+    with tqdm(total=num_folders) as pbar:
+        for dire in list_dir:
+
+            d_path = os.path.join(path, dire)
+            if os.path.isdir(d_path):
+                o_path = os.path.join(d_path, 'observations.npz')
+                a_path = os.path.join(d_path, 'actions.npz')
+
+                try:
+                    obs = np.load(o_path)['data']
+                    obs = obs[~np.isnan(obs).all(axis=1)]
+                    obs = obs[:, o_start_idx:o_end_idx]
+                    curr_state.extend(obs[:-1])
+                    next_state.extend(obs[1:])
+
+                    acts = np.load(a_path)['data']
+                    acts = acts[~np.isnan(acts).all(axis=1)]
+                    acts = acts[:, a_start_idx:a_end_idx]
+                    actions.extend(acts)
+                except Exception as e:
+                    print(e)
+            pbar.update(1)
+
+    end_time = time.time()
+    print(f"Elapsed time: {round(end_time-st_time,2)}\n")
+
+
+    # ------------------------------------------------------------
+    # Actions by substations
 
     n_sub = len(connections)
     actions = np.array(actions)
@@ -75,10 +95,23 @@ if __name__=='__main__':
 
     actions_by_sub = np.zeros((H,n_sub))
 
+    print("\nCreating actions by substation")
+    st_time = time.time()
+
     for sub_id in range(n_sub):
         sub_act = actions[:, sub_start[sub_id]:sub_end[sub_id]]
         u_act, act_to_int = np.unique(sub_act, axis=0, return_inverse=True)
         actions_by_sub[:, sub_id] = act_to_int/u_act.shape[0]+1
+
+    end_time = time.time()
+    print(f"Elapsed time: {round(end_time-st_time,2)}\n")
+
+
+    # ------------------------------------------------------------
+    # Save history npz
+
+    print("\nSaving compressed history")
+    st_time = time.time()
 
     next_state = np.array(next_state)
     curr_state = np.array(curr_state)
@@ -87,6 +120,11 @@ if __name__=='__main__':
     history = np.append(history, actions_by_sub,axis=1)
 
     print(history.shape)
+
+    np.savez_compressed(f'{path}_hist.npz', data=history)
+
+    end_time = time.time()
+    print(f"Elapsed time: {round(end_time-st_time,2)}\n")
 
     
 
