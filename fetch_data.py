@@ -53,8 +53,9 @@ if __name__=='__main__':
     curr_state = []
     actions = []
 
-    list_dir = os.listdir(path)[:20]
+    list_dir = os.listdir(path)
     num_folders = len(list_dir)
+    num_samples = 100000
 
     st_time = time.time()
     print(f"\nPath = {path}. Reading data from {num_folders} folders")
@@ -80,6 +81,11 @@ if __name__=='__main__':
                     actions.extend(acts)
                 except Exception as e:
                     print(e)
+                
+                if len(actions) >= num_samples:
+                    print(f"Reached {num_samples} samples. Breaking")
+                    break
+
             pbar.update(1)
 
     end_time = time.time()

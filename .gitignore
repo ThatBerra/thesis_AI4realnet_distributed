@@ -1,3 +1,5 @@
 */**
 *.pyc
 *.npz
+*.txt
+*.npy

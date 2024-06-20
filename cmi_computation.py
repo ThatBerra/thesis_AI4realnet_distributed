@@ -9,6 +9,8 @@ import numpy as np
 import multiprocessing as mp
 import math
 import mixed
+import os
+from tqdm import tqdm
 
 from itertools import product
 import time
@@ -74,6 +76,7 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
 
         #mi += freq_3v * np.log((freq_3v * freq_r)/(freq_ns * freq_iv))'''
     
+  
   ns, iv, k_idx = get_relative_indices(iv_label, ns_idx, iv_idx, n, m)
   
   ns_vector = history[:, ns].reshape((len(history),1))
@@ -83,8 +86,12 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
   
   #mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
   #mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
+  
+  print(f"[{os.getpid()}] : starting Mixed_KSG", flush=True)
+  st_time = time.time()
   mi_ns_iv = mixed.Mixed_KSG(ns_vector, iv_vector, k=int(len(history)/20))
-  print(f'Computed probabilities.Next state {ns}/{n}. Input variable: {iv_idx}')  
+  end_time = time.time()
+  print(f'[{os.getpid()}] : ETA {round(end_time-st_time,2)}. Next state {ns}/{n}. Input variable: {iv_idx}', flush=True)  
 
   #return mi_ns_sa - mi_ns_k
   return mi_ns_iv
@@ -137,21 +144,23 @@ def compute_mi_matrix_parallel(n, m, history):
     
     args_list = []
     for ns in range(n):
-        iv_label = 'state'
-        for cs in range(n):
-            args_list.append((iv_label, ns, cs, n, m, history))
+        # iv_label = 'state'
+        # for cs in range(n):
+        #     args_list.append((iv_label, ns, cs, n, m, history))
 
         iv_label = 'action'
         for a in range(m):
             args_list.append((iv_label, ns, a, n, m, history))
-        
-    results = pool.map(compute_MI_entry_wrapper, args_list)
+
+    results = []
+    for result in tqdm(pool.imap(compute_MI_entry_wrapper, args_list), total=len(args_list)):
+        results.append(result)
     
     i = 0
     for ns in range(n):
-        for cs in range(n):
-            MI[ns][cs] = results[i]
-            i += 1
+        # for cs in range(n):
+        #     MI[ns][cs] = results[i]
+        #     i += 1
 
         for a in range(m):
             MI[ns][n+a] = results[i]
