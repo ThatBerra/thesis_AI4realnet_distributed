@@ -107,7 +107,7 @@ if __name__=='__main__':
     for sub_id in range(n_sub):
         sub_act = actions[:, sub_start[sub_id]:sub_end[sub_id]]
         u_act, act_to_int = np.unique(sub_act, axis=0, return_inverse=True)
-        actions_by_sub[:, sub_id] = act_to_int/u_act.shape[0]+1
+        actions_by_sub[:, sub_id] = act_to_int/u_act.shape[0]
 
     end_time = time.time()
     print(f"Elapsed time: {round(end_time-st_time,2)}\n")
