@@ -7,12 +7,10 @@ Created on Wed Apr 24 15:05:37 2024
 
 import numpy as np
 import multiprocessing as mp
-import math
-import clustering.mutual_information.mixed as mixed
+import mutual_information.mixed as mixed
 import os
 from tqdm import tqdm
 
-from itertools import product
 import time
 
 def get_relative_indices(state_action, ns, iv, dim_state, dim_action):

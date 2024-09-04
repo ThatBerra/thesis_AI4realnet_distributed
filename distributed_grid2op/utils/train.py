@@ -183,8 +183,10 @@ class Trainer():
 
         return True
             
-    def learn(self, nb_scenario, rollout_len, callback=None, reset_num_timesteps=True, log_interval = 1, tb_log_name="OnPolicyAlgorithm", progress_bar=False):
+    def learn(self, nb_scenario, callback=None, reset_num_timesteps=True, tb_log_name="OnPolicyAlgorithm", progress_bar=False):
         tic = time.time()
+        agent_path = f'data/agents/{self.high_agent.r_seed}/{self.high_agent.agent_type}'
+        data_path = f'data/training/{self.high_agent.r_seed}/{self.high_agent.agent_type}'
         
         callbacks = []
         buffers = []
@@ -219,16 +221,16 @@ class Trainer():
                 self._dump_logs(n_episodes)'''
             
             if timestep % 904 == 0:
-                path = f'Interesting_data/independend_obs_90566/{timestep}'
+                path = os.path.join(data_path, f'{timestep}')
                 self.save_data(path, tic)
 
-                a_path = f'Interesting_agents/independend_obs_90566/{timestep}'
+                a_path = os.path.join(agent_path, f'{timestep}')
                 self.save_agent(a_path)
             
-        path = 'Interesting_data/independend_obs_90566/final'
+        path = os.path.join(data_path, 'final')
         self.save_data(path, tic)
 
-        a_path = 'Interesting_agents/complete_obs_90566/final'
+        a_path = os.path.join(agent_path, 'final')
         self.save_agent(a_path)
         
         for i, agent in enumerate(self.high_agent.agents):

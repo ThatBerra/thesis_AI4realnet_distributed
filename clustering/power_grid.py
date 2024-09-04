@@ -7,21 +7,23 @@ Created on Wed Apr 24 14:58:35 2024
 
 import numpy as np
 
-import clustering.extract_data.runner as runner
-import clustering.extract_data.fetch_data as fd
+import extract_data.runner as runner
+import extract_data.fetch_data as fd
 
-import clustering.mutual_information.cmi_computation as cmi
+import mutual_information.cmi_computation as cmi
 
 import grid2op
 import os
 
-import clustering.cluster.block_diag as bd
+import cluster.block_diag as bd
+
+SEED = 29
 
 if __name__=='__main__':
        
     env_name = 'l2rpn_case14_sandbox'
-    n_episodes = 1000
-    n_samples = 10000
+    n_episodes = 1
+    n_samples = 10
     path = f"./data/{env_name}_{n_episodes}"
     env = grid2op.make(env_name)
 
@@ -37,7 +39,7 @@ if __name__=='__main__':
         if connections[sub] > 3:
             sub_path = os.path.join(path, f'sub{sub}')
 
-            runner.run(sub, env, sub_path)
+            runner.run(sub, env, n_episodes, SEED, sub_path)
 
             fd.fetch(env, n_samples, sub_path)
 

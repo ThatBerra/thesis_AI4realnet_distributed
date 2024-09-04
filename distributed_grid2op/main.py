@@ -10,7 +10,7 @@ from grid2op.Reward import CloseToOverflowReward
 from grid2op.Agent import DoNothingAgent
 
 from Agents.HigLevel import IMARL, IMARL_complete_obs
-from distributed_grid2op.utils.train import Trainer
+from utils.train import Trainer
 
 
 SEED = 90566
@@ -160,7 +160,7 @@ if __name__ == "__main__":
     #my_agent.load_model('distributed_PPO_47008episodes_64\\11752')
 
     trainer = Trainer(env_train, my_agent, nb_scenario, SEED)
-    trainer.learn(nb_scenario, n_update)
+    trainer.learn(nb_scenario)
 
     #env_baseline = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
     #baseline_agent = DoNothingAgent(env_baseline.action_space)

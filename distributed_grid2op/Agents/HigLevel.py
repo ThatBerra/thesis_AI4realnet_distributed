@@ -25,6 +25,11 @@ class IMARL(L2rpnAgent):
         self.episode_rewards = []
         self.episode_survival = []
         self.training = False
+        if len(sub_clusters) == 1:
+            self.agent_type = 'centralized'
+        else:    
+            self.agent_type = 'distributed_partialobs'
+        self.r_seed = seed
 
         # create low level RL agents
         self.create_DLA(env, seed, **kwargs)
