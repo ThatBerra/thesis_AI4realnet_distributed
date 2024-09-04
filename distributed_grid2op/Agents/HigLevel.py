@@ -132,6 +132,9 @@ class IMARL_complete_obs(L2rpnAgent):
         self.episode_survival = []
         self.training = False
 
+        self.agent_type = 'distributed_completeobs'
+        self.r_seed = seed
+
         # create low level RL agents
         self.create_DLA(env, seed, **kwargs)
         self.reset()
