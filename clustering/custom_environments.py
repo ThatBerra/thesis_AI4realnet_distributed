@@ -12,7 +12,7 @@ import math
 
 import clustering.mutual_information.cmi_computation as cmi
 import clustering.mutual_information.mixed as mixed
-import block_diag as bd
+import clustering.cluster.block_diag as bd
 
 from itertools import product
 import time

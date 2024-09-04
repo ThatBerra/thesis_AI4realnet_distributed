@@ -11,12 +11,11 @@ import clustering.extract_data.runner as runner
 import clustering.extract_data.fetch_data as fd
 
 import clustering.mutual_information.cmi_computation as cmi
-import shuffled_mi as smi
 
 import grid2op
 import os
 
-import clustering.block_diag as bd
+import clustering.cluster.block_diag as bd
 
 if __name__=='__main__':
        
