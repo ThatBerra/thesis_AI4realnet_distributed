@@ -10,7 +10,7 @@ from grid2op.Reward import CloseToOverflowReward
 from grid2op.Agent import DoNothingAgent
 
 from Agents.HigLevel import IMARL, IMARL_complete_obs
-from train import Trainer
+from distributed_grid2op.utils.train import Trainer
 
 
 SEED = 90566
