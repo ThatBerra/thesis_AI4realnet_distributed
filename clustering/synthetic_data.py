@@ -412,8 +412,9 @@ if __name__=='__main__':
         variables.append('a{}'.format(i))
         
     block_matrix, blocks = bd.block_diagonalization(cmi_matrix, targets, variables, threshold)'''
-    
-    with open('data/custom_env/mi.npy', 'wb') as f:
+    path = 'data/custom_env'
+    os.makedirs(path, exist_ok=True)
+    with open(os.path.join(path, 'mi.npy'), 'wb') as f:
         np.save(f, cmi_matrix)
 
     bd.diagonalize(cmi_matrix, 'data/custom_env/diagonalizations')
