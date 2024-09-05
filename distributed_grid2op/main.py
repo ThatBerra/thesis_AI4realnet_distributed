@@ -135,7 +135,8 @@ if __name__ == "__main__":
         shutil.rmtree("C:\\Users\\david\\data_grid2op\\l2rpn_case14_sandbox_val")
         nm_env_train, nm_env_test = env.train_val_split_random(pct_val=10.)'''
     
-    env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend()) 
+    env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
+    #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
     
     #nb_scenario = 112 * len(env_train.chronics_handler.subpaths)
     nb_scenario = 12 * len(env_train.chronics_handler.subpaths)
