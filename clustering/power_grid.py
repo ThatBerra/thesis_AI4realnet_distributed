@@ -44,7 +44,7 @@ if __name__=='__main__':
 
             fd.fetch(env, n_samples, sub_path)
 
-            history = np.load(os.path.join(path, "hist.npz"))["data"]
+            history = np.load(os.path.join(sub_path, "hist.npz"))["data"]
             mi_vector, eta = cmi.compute_mi_matrix_parallel(n, m, sub, history)
             mi[:,sub] = mi_vector[:,n+sub]
 

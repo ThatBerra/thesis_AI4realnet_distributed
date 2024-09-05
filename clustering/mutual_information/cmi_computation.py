@@ -131,41 +131,52 @@ def compute_cmi_matrix(n, m, history):
 def compute_MI_entry_wrapper(args):
     return compute_MI_entry(*args)
 
-def compute_mi_matrix_parallel(n, m, history):
+
+def compute_mi_matrix_parallel(n, m, sub, history):
     MI = np.zeros((n, n+m))
-    
+
     history = np.asanyarray(history)
-    
+
     st = time.time()
-    
-    pool = mp.Pool(mp.cpu_count())
-    
+
+    pool = mp.Pool(55)
+
+    #env = grid2op.make('l2rpn_case14_sandbox')
+    #env = grid2op.make('l2rpn_wcci_2022')
+    #connections = env.action_space.sub_info
+
     args_list = []
     for ns in range(n):
-        # iv_label = 'state'
-        # for cs in range(n):
-        #     args_list.append((iv_label, ns, cs, n, m, history))
+        #iv_label = 'state'
+        #for cs in range(n):
+        #    args_list.append((iv_label, ns, cs, n, m, history))
 
         iv_label = 'action'
         for a in range(m):
-            args_list.append((iv_label, ns, a, n, m, history))
+            if a == sub:
+                args_list.append((iv_label, ns, a, n, m, history))
 
     results = []
     for result in tqdm(pool.imap(compute_MI_entry_wrapper, args_list), total=len(args_list)):
         results.append(result)
-    
+
     i = 0
     for ns in range(n):
-        # for cs in range(n):
+        #for cs in range(n):
         #     MI[ns][cs] = results[i]
         #     i += 1
 
         for a in range(m):
-            MI[ns][n+a] = results[i]
-            i += 1
-        
-    print('-----------------------------------------')    
+            if a == sub:
+                MI[ns][n+a] = results[i]
+                i += 1
+
+    print('-----------------------------------------')
     print(f'Total time: {round(time.time() - st, 2)} s')
-    
+
     t = round(time.time() - st, 2)
-    return MI, t
+    return MI, t   
+
+
+
+
