@@ -45,6 +45,7 @@ def run(sub_id, env, nb_episodes, seed, path):
     
     NB_CORE = mp.cpu_count() 
     PATH_SAVE = os.path.join(path, 'runs') 
+    os.makedirs(PATH_SAVE, exist_ok=True)
 
     print(f"NB_EPISODE = {nb_episodes}, nb_scenario = {len(env.chronics_handler.subpaths)}")
 

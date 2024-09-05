@@ -38,6 +38,7 @@ if __name__=='__main__':
     for sub in range(m):
         if connections[sub] > 3:
             sub_path = os.path.join(path, f'sub{sub}')
+            os.makedirs(sub_path, exist_ok=True)
 
             runner.run(sub, env, n_episodes, SEED, sub_path)
 
