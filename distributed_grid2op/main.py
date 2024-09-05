@@ -135,25 +135,29 @@ if __name__ == "__main__":
         shutil.rmtree("C:\\Users\\david\\data_grid2op\\l2rpn_case14_sandbox_val")
         nm_env_train, nm_env_test = env.train_val_split_random(pct_val=10.)'''
     
-    env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
-    #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
+    #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
+    env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
     
     #nb_scenario = 112 * len(env_train.chronics_handler.subpaths)
     nb_scenario = 12 * len(env_train.chronics_handler.subpaths)
 
-    sub_clusters = [
-            [0, 1, 2, 4],
-            [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-            ]
-    
-    line_clusters = [
-        [0,1,2,3,4,5,6],
-        [7,8,9,10,11,12,13,14,15,16,17,18,19]
-    ]
-    
-    #clusters = [
-    #        [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+    #sub_clusters = [
+    #        [0, 1, 2, 4],
+    #        [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
     #        ]
+    
+    #line_clusters = [
+    #    [0,1,2,3,4,5,6],
+    #    [7,8,9,10,11,12,13,14,15,16,17,18,19]
+    #]
+    
+    sub_clusters = [
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+            ]
+
+    line_clusters = [
+        [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    ]
     
     
     my_agent = IMARL(env_train, sub_clusters, line_clusters, SEED, **{})

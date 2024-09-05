@@ -556,7 +556,7 @@ class CompleteObsConverter(Converter):
         self.gymEnv.observation_space = BoxGymObsSpace(env.observation_space)
 
         self.gymEnv.action_space.close()
-        self.gymEnv.action_space = ClusterActionSpace(self.sub_cluster, seed)
+        self.gymEnv.action_space = ClusterActionSpace(self.num_actions, seed)
         
     def convert_obs(self, obs):
         gym_obs = self.gymEnv.observation_space.to_gym(obs)
