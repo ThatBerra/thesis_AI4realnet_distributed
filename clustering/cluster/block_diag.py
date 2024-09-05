@@ -4,6 +4,7 @@ import seaborn as sn
 from matplotlib.patches import Rectangle
 import pandas as pd
 import os
+import grid2op
 
 def dfs(adj_matrix, node, targets, variables, visited_r, visited_c, component, rc):
   #the argument 'rc' is checked because we need to act in different ways if we are considering a row or a column
@@ -451,7 +452,7 @@ def find_cliques(a):
     #print(blocks_idx)
     return blocks_idx
 
-def compute_total_score(blocks_idx):
+def compute_total_score(blocks_idx, bm):
     total_score = 0
     for idx_list in blocks_idx:
       block = bm[idx_list[0]:idx_list[1],idx_list[2]:idx_list[3]]
@@ -478,8 +479,7 @@ def plot_results(bin, df, blocks_idx, out_folder, quant, total_score):
     plt.savefig(os.path.join(out_folder, f'cliques_{quant}.png'), dpi=200)
     plt.close()
 
-def diagonalize(a, path):
-
+def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
 
   quant_list = [
     #   .50, .55, .56, .57, .58, .59,
@@ -500,11 +500,18 @@ def diagonalize(a, path):
   # plt.show(block=False)
 
   # quantile thresh
-  idx = [1,2,3,4,5,8,12]
-  bin = np.zeros((20,14))
+  env = grid2op.make(env_name)
+  idx = []
+  n = env.observation_space.n_line
+  m = env.observation_space.n_sub
 
-  targets = [f's{line}' for line in range(20)]
-  variables = [f'sub{s}' for s in range(14)]
+  for sub in range(m):
+      if env.observation_space.sub_info[sub] > 3:
+          idx.append(sub)
+  bin = np.zeros((n,m))
+
+  targets = [f's{line}' for line in range(n)]
+  variables = [f'sub{s}' for s in range(m)]
 
   for quant in quant_list:
 
@@ -533,7 +540,71 @@ def diagonalize(a, path):
     # plt.show()
       
     blocks_idx = find_cliques(bm)
-    total_score = compute_total_score(blocks_idx)
+    total_score = compute_total_score(blocks_idx, bm)
+
+    plot_results(bin, bdf, blocks_idx, path, quant, total_score)
+
+
+    print(f'Score: {round(total_score,2)}')
+    print()
+
+
+def diagonalize_synthetic(a, path):
+
+  quant_list = [
+    #   .50, .55, .56, .57, .58, .59,
+    #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
+    #   .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
+    #   .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
+      .90, .91, .92, .93, .94,
+      ]
+  # quant_list = [.95]
+  #out_folder = 'test_thresh'
+  
+  #with open('./complete_MI_case14.npy', 'rb') as f:
+  #   a = np.load(f)
+     
+  # displaying the plotted heatmap 
+  # plt.figure(1)
+  # hm = sn.heatmap(data = a, annot=True, cbar=False)
+  # plt.show(block=False)
+
+  # quantile thresh
+  n = a.shape[0]
+  m = a.shape[1]
+
+  targets = [f't{t}' for t in range(n)]
+  variables = [f'v{v}' for v in range(m)]
+  bin = np.zeros((n,m))
+
+  for quant in quant_list:
+
+    print()
+    print(f'Threshold quantile: {quant}')
+
+    for var in range(m):
+        thresh = np.quantile(a[:,var].flatten(), quant)
+        bin[:,var] = a[:,var]>thresh
+
+    # plt.figure(2)
+    # hm = sn.heatmap(data = bin, annot=True, cbar=False)
+    # plt.title('Binary')
+    # plt.savefig(os.path.join(out_folder, f'bin_{quant}.png'), dpi=200)
+    # plt.close()
+    # plt.show(block=False)
+
+    bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, 0.75)
+    
+    # with open('./fin.npy', 'wb') as f:
+    #   np.save(f, bm)
+    # print(blocks)
+
+    # plt.figure(3)
+    # hm = sn.heatmap(data = bdf, annot=True, cbar=False)
+    # plt.show()
+      
+    blocks_idx = find_cliques(bm)
+    total_score = compute_total_score(blocks_idx, bm)
 
     plot_results(bin, bdf, blocks_idx, path, quant, total_score)
 

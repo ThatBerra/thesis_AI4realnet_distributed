@@ -417,4 +417,4 @@ if __name__=='__main__':
     with open(os.path.join(path, 'mi.npy'), 'wb') as f:
         np.save(f, cmi_matrix)
 
-    bd.diagonalize(cmi_matrix, 'data/custom_env/diagonalizations')
+    bd.diagonalize_synthetic(cmi_matrix, 'data/custom_env/diagonalizations')

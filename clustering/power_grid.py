@@ -64,7 +64,7 @@ if __name__=='__main__':
     with open(os.path.join(path, 'unbiased_mi.npy'), 'wb') as f:
         np.save(f, unbiased_mi)
 
-    bd.diagonalize(unbiased_mi, os.path.join(path, 'diagonalizations'))
+    bd.diagonalize(unbiased_mi, os.path.join(path, 'diagonalizations'), env_name)
 
 
     
