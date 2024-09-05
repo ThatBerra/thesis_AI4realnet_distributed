@@ -594,5 +594,5 @@ def diagonalize_synthetic(a, path):
 
     bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, thres)
     
-    with open(os.path.join(path, f'bm_{thres}'), 'wb') as f:
+    with open(os.path.join(path, f'bm_{thres}.npy'), 'wb') as f:
         np.save(f, bm)
