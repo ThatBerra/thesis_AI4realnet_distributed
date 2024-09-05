@@ -567,25 +567,14 @@ def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
 
 def diagonalize_synthetic(a, path):
 
-  quant_list = [
+  thres_list = [
     #   .50, .55, .56, .57, .58, .59,
     #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
-    #   .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
-    #   .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
+       .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
+       .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
       .90, .91, .92, .93, .94,
       ]
-  # quant_list = [.95]
-  #out_folder = 'test_thresh'
   
-  #with open('./complete_MI_case14.npy', 'rb') as f:
-  #   a = np.load(f)
-     
-  # displaying the plotted heatmap 
-  # plt.figure(1)
-  # hm = sn.heatmap(data = a, annot=True, cbar=False)
-  # plt.show(block=False)
-
-  # quantile thresh
   n = a.shape[0]
   m = a.shape[1]
 
@@ -593,37 +582,16 @@ def diagonalize_synthetic(a, path):
   variables = [f'v{v}' for v in range(m)]
   bin = np.zeros((n,m))
 
-  for quant in quant_list:
+  for thres in thres_list:
 
     print()
-    print(f'Threshold quantile: {quant}')
+    print(f'Threshold quantile: {thres}')
 
     for var in range(m):
-        thresh = np.quantile(a[:,var].flatten(), quant)
+        thresh = np.quantile(a[:,var].flatten(), thres)
         bin[:,var] = a[:,var]>thresh
 
-    # plt.figure(2)
-    # hm = sn.heatmap(data = bin, annot=True, cbar=False)
-    # plt.title('Binary')
-    # plt.savefig(os.path.join(out_folder, f'bin_{quant}.png'), dpi=200)
-    # plt.close()
-    # plt.show(block=False)
-
-    bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, 0.75)
+    bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, thres)
     
-    # with open('./fin.npy', 'wb') as f:
-    #   np.save(f, bm)
-    # print(blocks)
-
-    # plt.figure(3)
-    # hm = sn.heatmap(data = bdf, annot=True, cbar=False)
-    # plt.show()
-      
-    blocks_idx = find_cliques(bm)
-    total_score = compute_total_score(blocks_idx, bm)
-
-    plot_results(bin, bdf, blocks_idx, path, quant, total_score)
-
-
-    print(f'Score: {round(total_score,2)}')
-    print()
+    with open(os.path.join(path, f'bm_{thres}'), 'wb') as f:
+        np.save(f, bm)

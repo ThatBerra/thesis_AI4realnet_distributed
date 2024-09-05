@@ -418,3 +418,5 @@ if __name__=='__main__':
         np.save(f, cmi_matrix)
 
     bd.diagonalize_synthetic(cmi_matrix, 'data/custom_env/diagonalizations')
+
+    
