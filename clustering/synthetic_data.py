@@ -8,14 +8,15 @@ Created on Tue Apr 16 11:01:14 2024
 import gymnasium
 from gymnasium import spaces
 import numpy as np
-import math
 
-import clustering.mutual_information.cmi_computation as cmi
-import clustering.mutual_information.mixed as mixed
-import clustering.cluster.block_diag as bd
+import mutual_information.mixed as mixed
+import cluster.block_diag as bd
+import multiprocessing as mp
 
+from tqdm import tqdm
 from itertools import product
 import time
+import os
 
 SEED = 90566
 np.random.seed(SEED)
@@ -240,7 +241,7 @@ def get_relative_indices(state_action, ns, iv, dim_state, dim_action):
   return ns, iv_idx, k_idx
 
 def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
-  '''delta = 0.01  
+  '''delta = 0.1  
   hoeffding = math.sqrt(math.log(1/delta)/len(history))
   
   ns, iv, k_idx = get_relative_indices(iv_label, ns_idx, iv_idx, n, m)
@@ -268,7 +269,6 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
     lower_3v = count/len(history) - hoeffding
     
     if lower_3v > 0:
-      
         ns_value = arr[0]
         iv_r_value = arr[1:]
         r_value = arr[2:]
@@ -282,56 +282,75 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
         freq_ns = c_ns/len(history)
         freq_iv = c_iv/len(history)
         freq_r = c_r/len(history)
-        
+    
         lower_ns = count/c_ns - hoeffding
         lower_r = c_r/c_iv
 
-        mi += lower_3v * np.log(lower_ns * lower_r)'''
-        
+        mi += lower_3v * np.log(lower_ns * lower_r)
+
+        #mi += freq_3v * np.log((freq_3v * freq_r)/(freq_ns * freq_iv))'''
+    
+  
   ns, iv, k_idx = get_relative_indices(iv_label, ns_idx, iv_idx, n, m)
   
   ns_vector = history[:, ns].reshape((len(history),1))
-  sa_vector = history[:, n:]
-  k_vector = history[:, k_idx]
+  iv_vector = history[:, iv].reshape((len(history),1))
+  #sa_vector = history[:, n:]
+  #k_vector = history[:, k_idx]
   
-  mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
-  mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
+  #mi_ns_sa = mixed.Mixed_KSG(ns_vector, sa_vector, k=int(len(history)/20))
+  #mi_ns_k = mixed.Mixed_KSG(ns_vector, k_vector, k=int(len(history)/20))
+  
+  print(f"[{os.getpid()}] : starting Mixed_KSG", flush=True)
+  st_time = time.time()
+  mi_ns_iv = mixed.Mixed_KSG(ns_vector, iv_vector, k=int(len(history)/20))
+  end_time = time.time()
+  print(f'[{os.getpid()}] : ETA {round(end_time-st_time,2)}. Next state {ns}/{n}. Input variable: {iv_idx}', flush=True)  
 
-  return mi_ns_sa - mi_ns_k
+  #return mi_ns_sa - mi_ns_k
+  return mi_ns_iv
 
-def compute_cmi_matrix(n, m, history):
-    
+def compute_MI_entry_wrapper(args):
+    return compute_MI_entry(*args)
+
+def compute_mi_matrix_parallel(n, m, history):
     MI = np.zeros((n, n+m))
-    
-    #lp = 1e-18
-    st = time.time()
-    for ns in range(n):
-      print()
-      print('--------------------')
-      print(f'Next state {ns}/{n}')
-      iv_label = 'state'
-      #dom_ns, dom_iv, dom_r = create_domains(iv_label, n, m, dim_state, dim_action)
-      for cs in range(n):
-        sti = time.time()  
-        print(f'Input variable: state {cs}/{n}')  
-       
-        MI[ns][cs] = compute_MI_entry(iv_label, ns, cs, n, m, history)
-        print(f'Computed probabilities. Elapsed time: {round(time.time()-sti, 2)} s')
-        
-    
-      iv_label = 'action'
-      #dom_ns, dom_iv, dom_r = create_domains(iv_label, n, m, dim_state, dim_action)
-      for a in range(m):
-        sti = time.time() 
-        print(f'Input variable: action {a}/{m}')  
-        
-        MI[ns][n+a] = compute_MI_entry(iv_label, ns, a, n, m, history)
-        print(f'Computed probabilities. Elapsed time: {round(time.time()-sti, 2)} s')
-     
-    print('-----------------------------------------')    
-    print(f'Total time: {round(time.time() - st, 2)} s')
-    return MI
 
+    history = np.asanyarray(history)
+
+    st = time.time()
+
+    pool = mp.Pool(55)
+
+    args_list = []
+    for ns in range(n):
+        iv_label = 'state'
+        for cs in range(n):
+            args_list.append((iv_label, ns, cs, n, m, history))
+
+        iv_label = 'action'
+        for a in range(m):
+                args_list.append((iv_label, ns, a, n, m, history))
+
+    results = []
+    for result in tqdm(pool.imap(compute_MI_entry_wrapper, args_list), total=len(args_list)):
+        results.append(result)
+
+    i = 0
+    for ns in range(n):
+        for cs in range(n):
+             MI[ns][cs] = results[i]
+             i += 1
+
+        for a in range(m):
+                MI[ns][n+a] = results[i]
+                i += 1
+
+    print('-----------------------------------------')
+    print(f'Total time: {round(time.time() - st, 2)} s')
+
+    t = round(time.time() - st, 2)
+    return MI, t   
 
 if __name__=='__main__':
     
@@ -381,7 +400,7 @@ if __name__=='__main__':
     history = env._get_history()  # H triples (s, a, s')
     
     #cmi_matrix = mix.compute_cmi_mixture(history, n, m, k)
-    cmi_matrix, t = cmi.compute_mi_matrix_parallel(n, m, np.asarray(history))
+    cmi_matrix, t = compute_mi_matrix_parallel(n, m, np.asarray(history))
     
     '''targets = []
     variables = []
