@@ -567,6 +567,7 @@ def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
 
 def diagonalize_synthetic(a, path):
 
+  os.makedirs(path, exist_ok=True)
   thres_list = [
     #   .50, .55, .56, .57, .58, .59,
     #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
