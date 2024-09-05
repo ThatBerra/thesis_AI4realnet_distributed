@@ -100,6 +100,7 @@ def find_cliques(a):
     col_offset = 0
     start_row_idx = -1
     start_col_idx = -1
+    blocks_idx.append([row_offset, row_idx, col_offset, col_idx])
 
     j = 0
     while row_idx < a.shape[0]-1 and col_idx < a.shape[1]-1:
@@ -173,8 +174,12 @@ def find_cliques(a):
             block = a[row_offset:row_idx,col_offset:col_idx]
 
         if block.size == 0:  # restore to single 1 if reduction was not effective (row_idx == row_offset or col_idx == col_offset)
-            row_idx = blocks_idx[-1][1]
-            col_idx = blocks_idx[-1][3]
+            if len(blocks_idx) > 0: # restore to single 1 if reduction was not effective (row_idx == row_offset or col_idx == col_offset)
+                row_idx = blocks_idx[-1][1]
+                col_idx = blocks_idx[-1][3]
+            else:
+                row_idx = 0
+                col_idx = 0
             block = a[row_offset:row_idx,col_offset:col_idx]
 
         if np.sum(block) > 0:
@@ -218,7 +223,6 @@ def find_cliques(a):
                         prev_row_offset = last_block[0]
                         prev_col_offset = last_block[2]
 
-
                         while has_sparse_border(a, prev_row_offset, row_idx, prev_col_offset, col_idx, border_type='row') or \
                                 has_sparse_border(a, prev_row_offset, row_idx, prev_col_offset, col_idx, border_type='col'):
                             
@@ -226,7 +230,9 @@ def find_cliques(a):
                                 row_idx -= 1
 
                             if has_sparse_border(a, prev_row_offset, row_idx, prev_col_offset, col_idx, border_type='col'):
-                                col_idx -= 1                
+                                col_idx -= 1
+                            if col_idx < 0:
+                                break                
 
                         if row_idx == last_block[1] and col_idx == last_block[3]:  # if same block as before move to next one
                             row_idx = row_offset + next_one_idx[0] + 1
@@ -245,7 +251,8 @@ def find_cliques(a):
                 # plt.title('Reshaped previous block')
                 # fm = sn.heatmap(data = block, annot=True, cbar=False)
                 # plt.show()
-
+            if row_idx == a.shape[0] or col_idx == a.shape[1]:
+                break
 
         # -------------------------------------------------------------
         # EXPAND LAST BLOCK
@@ -271,7 +278,6 @@ def find_cliques(a):
                     break
                 last_row_idx -= 1
 
-
         blocks_idx.append([row_offset, row_idx, col_offset, col_idx])
 
         block = a[row_offset:row_idx,col_offset:col_idx]
@@ -282,12 +288,14 @@ def find_cliques(a):
 
         for i in range(len(blocks_idx)):
             b = a[blocks_idx[i][0]:blocks_idx[i][1], blocks_idx[i][2]:blocks_idx[i][3]]
-            plt.figure()
-            plt.title(f'Iter {j} | Block {i}: {blocks_idx[i]}')
-            fm = sn.heatmap(data = b, annot=True, cbar=False)
-            # plt.show(block=False)
-            plt.savefig(f'iter/{j}_b{i}.png', dpi=200)
-            plt.close()
+            if len(b) > 0:
+                plt.figure()
+                plt.title(f'Iter {j} | Block {i}: {blocks_idx[i]}')
+                fm = sn.heatmap(data = b, annot=True, cbar=False)
+                # plt.show(block=False)
+                os.makedirs(os.path.join('fetch_data', 'iter'), exist_ok=True)
+                plt.savefig(f'fetch_data/iter/{j}_b{i}.png', dpi=200)
+                plt.close()
 
         # ---------------------------------------------------------------
         # set variables for next iter    
@@ -412,8 +420,9 @@ def find_cliques(a):
                 blocks_idx[i-1][1] = blocks_idx[i][1]
                 blocks_idx[i-1][3] = blocks_idx[i][3]
             else:
-                blocks_idx[i+1][0] = blocks_idx[i][0]
-                blocks_idx[i+1][2] = blocks_idx[i][2]
+                if i < len(blocks_idx)-1:
+                    blocks_idx[i+1][0] = blocks_idx[i][0]
+                    blocks_idx[i+1][2] = blocks_idx[i][2]
             blocks_idx.pop(i)
         else:
             i+=1
@@ -432,7 +441,13 @@ def find_cliques(a):
                 previous_block[3] = blocks_idx[i][3]
                 delta_score_previous = compute_metric(a[previous_block[0]:previous_block[1],previous_block[2]:previous_block[3]]) - \
                     compute_metric(a[blocks_idx[i-1][0]:blocks_idx[i-1][1],blocks_idx[i-1][2]:blocks_idx[i-1][3]])
-                    
+            else:
+                previous_block = [0, 0, 0, 0]
+                previous_block[1] = blocks_idx[i][1]
+                previous_block[3] = blocks_idx[i][3]
+                delta_score_previous = compute_metric(a[previous_block[0]:previous_block[1],previous_block[2]:previous_block[3]]) - \
+                    compute_metric(a[blocks_idx[i-1][0]:blocks_idx[i-1][1],blocks_idx[i-1][2]:blocks_idx[i-1][3]])        
+            
             # Merge to next block
             if i < len(blocks_idx)-1:
                 next_block = blocks_idx[i+1].copy()
@@ -444,7 +459,8 @@ def find_cliques(a):
             if delta_score_previous > delta_score_next:  # Take maximum score increment
                 blocks_idx[i-1] = previous_block.copy()
             else:
-                blocks_idx[i+1] = next_block.copy()
+                if i < len(blocks_idx) -1:
+                    blocks_idx[i+1] = next_block.copy()
             blocks_idx.pop(i)
         else:
             i+=1
