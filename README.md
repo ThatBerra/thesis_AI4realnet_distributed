@@ -28,4 +28,6 @@ python clustering/synthetic_data.py
 ```commandline
 python clustering/power_grid.py
 ```
+#### Disclaimer
+Creating a virtual environment is not strictly necessary, however, due to the fact that in order to properly run the experiment on power grid one needs to modify files in the library, this is strongly suggested, to be sure that grid2op works as intended outside the virtual environment.
 
