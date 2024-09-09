@@ -21,6 +21,8 @@ Replace `grid2op_patch/EpisodeData.py` in `venv_clustering/lib/python3/site-pack
 
 Replace `grid2op_patch/aux_fun.py` in `venv_clustering/lib/python3/site-packages/grid2op/Runner/aux_fun.py`
 
+### Run experiments
+
 #### Run experiment on synthetic data
 ```commandline
 python clustering/synthetic_data.py
@@ -48,7 +50,7 @@ source venv_learning/bin/activate
 ```commandline
 pip install -r requirements.txt
 ```
-#### Run experimenta 
+### Run experimenta 
 ```commandline
 python distributed_grid2op/main.py
 ```
