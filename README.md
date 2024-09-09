@@ -50,7 +50,7 @@ source venv_learning/bin/activate
 ```commandline
 pip install -r requirements.txt
 ```
-### Run experimenta 
+### Run experiments
 ```commandline
 python distributed_grid2op/main.py
 ```
