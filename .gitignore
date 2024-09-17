@@ -4,4 +4,6 @@
 *.npy
 *.ini
 *.zip
+*.csv
+*.png
 
