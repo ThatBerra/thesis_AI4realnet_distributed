@@ -100,21 +100,38 @@ def collect_baseline_data(env, actor, nb_episode):
     return
 
 if __name__ == "__main__":
+    #Inputs: modify as will
+    env_name = 'l2rpn_case14_sandbox'
+    
+    #clusters for the decomposed problem
+    sub_clusters = [
+            [0, 1, 2, 4],
+            [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+            ]
+    
+    line_clusters = [
+        [0,1,2,3,4,5,6],
+        [7,8,9,10,11,12,13,14,15,16,17,18,19]
+    ]
+    '''Uncomment for centralized model
+    sub_clusters = [
+            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+            ]
+
+    line_clusters = [
+        [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
+    ]'''
+    
+    # number of iterations over the training dataset
+    n_iterations = 25
+
+    # --------------------------------------------------------------------
     seed_everything(SEED)
-    n_update = 0
-
-    model_name = f"Distributed_PPO_{SEED}"
-    print("model name: ", model_name)
-
-    my_dir = f"{model_name}"
-    output_result_dir = os.path.join(my_dir, "result")
-    model_path = os.path.join(my_dir, 'model')
 
     if torch.cuda.is_available():
         print(">> >> using cuda")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    env_name = 'l2rpn_case14_sandbox'
 
     # This will generate the train-validation split in "data_grid2op" folder, execute once the first time
     # Any new execution will erase data collected in that folder (for example with an EpisodeStatistic run)
@@ -131,30 +148,7 @@ if __name__ == "__main__":
     env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
     #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
     
-    # modify this variable according to the number of iterations you want to make
-    n_iterations = 25
     nb_scenario = n_iterations * len(env_train.chronics_handler.subpaths)
-
-    sub_clusters = [
-            [0, 1, 2, 4],
-            [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-            ]
-    
-    line_clusters = [
-        [0,1,2,3,4,5,6],
-        [7,8,9,10,11,12,13,14,15,16,17,18,19]
-    ]
-    
-    '''Uncomment for centralized model
-
-    sub_clusters = [
-            [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-            ]
-
-    line_clusters = [
-        [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
-    ]'''
-    
     
     my_agent = IMARL(env_train, sub_clusters, line_clusters, SEED, **{})
 

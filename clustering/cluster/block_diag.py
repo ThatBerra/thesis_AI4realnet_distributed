@@ -88,11 +88,6 @@ def compute_metric(block):
 
 #TODO: Either clean or remove all of the following functions
 def find_cliques(a):
-
-    # plt.figure(5)
-    # sn.heatmap(data =a, annot=True, cbar=False) 
-    # plt.show(block=False)
-
     blocks_idx = []
 
     row_idx = 0
@@ -131,27 +126,8 @@ def find_cliques(a):
             if col_idx < a.shape[1]:
                 if a[row_idx-1,col_idx] == 1:
                     col_idx += 1
-            
-            # # Move down
-            # while row_idx < a.shape[0]:
-            #     if a[row_idx,col_idx-1] == 1:
-            #         row_idx += 1
-            #     else:
-            #         break
-
-            # # Move right
-            # while col_idx < a.shape[1]:
-            #     if a[row_idx-1,col_idx] == 1:
-            #         col_idx += 1
-            #     else:
-            #         break
                 
         block = a[row_offset:row_idx,col_offset:col_idx]
-        # plt.figure()
-        # plt.title('Starting block')
-        # fm = sn.heatmap(data = block, annot=True, cbar=False)
-        # # plt.show(block=False)
-        # plt.savefig(f'iter/{j}_0.png', dpi=200)
 
         # ---------------------------------------------------------------------    
         # REDUCE
@@ -195,11 +171,6 @@ def find_cliques(a):
 
         # check if block has one element only
         block = a[row_offset:row_idx,col_offset:col_idx]
-        # plt.figure()
-        # plt.title('After reduction')
-        # fm = sn.heatmap(data = block, annot=True, cbar=False)
-        # # plt.show(block=False)
-        # plt.savefig(f'iter/{j}_1.png', dpi=200)
 
         while np.sum(block) <= 1:
             row_idx += 1
@@ -246,12 +217,6 @@ def find_cliques(a):
                             blocks_idx.pop()
 
                         # blocks_idx.pop()
-
-                # block = a[row_offset:row_idx, col_offset:col_idx]
-                # plt.figure()
-                # plt.title('Reshaped previous block')
-                # fm = sn.heatmap(data = block, annot=True, cbar=False)
-                # plt.show()
             if row_idx == a.shape[0] or col_idx == a.shape[1]:
                 break
 
@@ -282,11 +247,6 @@ def find_cliques(a):
         blocks_idx.append([row_offset, row_idx, col_offset, col_idx])
 
         block = a[row_offset:row_idx,col_offset:col_idx]
-        # plt.figure()
-        # plt.title('Intermediate block')
-        # fm = sn.heatmap(data = block, annot=True, cbar=False)
-        # plt.show()
-
         for i in range(len(blocks_idx)):
             b = a[blocks_idx[i][0]:blocks_idx[i][1], blocks_idx[i][2]:blocks_idx[i][3]]
             if len(b) > 0:
@@ -333,52 +293,16 @@ def find_cliques(a):
             b2 = a[idx_2[0]:idx_2[1],idx_2[2]:idx_2[3]]
     
             b1_diag = a[idx_1[0]:idx_1[1]-1,idx_1[2]:idx_1[3]-1]
-            # fig, ax = plt.subplots()
-            # sn.heatmap(data = a, annot=True, cbar=False)
-            # ax.add_patch(Rectangle((idx_1[2], idx_1[0]), idx_1[3]-1-idx_1[2], idx_1[1]-1-idx_1[0],
-            #             edgecolor='red',
-            #             facecolor='none',
-            #             lw=2))
-            # plt.show()
-
 
             b1_left = a[idx_1[0]:idx_1[1],idx_1[2]:idx_1[3]-1]
-            # fig, ax = plt.subplots()
-            # sn.heatmap(data = a, annot=True, cbar=False)
-            # ax.add_patch(Rectangle((idx_1[2], idx_1[0]), idx_1[3]-1-idx_1[2], idx_1[1]-idx_1[0],
-            #             edgecolor='red',
-            #             facecolor='none',
-            #             lw=2))
-            # plt.show()
 
             b1_up = a[idx_1[0]:idx_1[1]-1,idx_1[2]:idx_1[3]]
-            # fig, ax = plt.subplots()
-            # sn.heatmap(data = a, annot=True, cbar=False)
-            # ax.add_patch(Rectangle((idx_1[2], idx_1[0]), idx_1[3]-idx_1[2], idx_1[1]-1-idx_1[0],
-            #             edgecolor='red',
-            #             facecolor='none',
-            #             lw=2))
-            # plt.show()
 
             b2_diag = a[idx_2[0]+1:idx_2[1],idx_2[2]+1:idx_2[3]]
 
             b2_right = a[idx_2[0]:idx_2[1],idx_2[2]+1:idx_2[3]]
-            # fig, ax = plt.subplots()
-            # sn.heatmap(data = a, annot=True, cbar=False)
-            # ax.add_patch(Rectangle((idx_2[2]+1, idx_2[0]), idx_2[3]-idx_2[2]-1, idx_2[1]-idx_2[0],
-            #             edgecolor='red',
-            #             facecolor='none',
-            #             lw=2))
-            # plt.show()
 
             b2_down = a[idx_2[0]+1:idx_2[1],idx_2[2]:idx_2[3]]
-            # fig, ax = plt.subplots()
-            # sn.heatmap(data = a, annot=True, cbar=False)
-            # ax.add_patch(Rectangle((idx_2[2], idx_2[0]+1), idx_2[3]-idx_2[2], idx_2[1]-idx_2[0]-1,
-            #             edgecolor='red',
-            #             facecolor='none',
-            #             lw=2))
-            # plt.show()
 
             # all combo
             m_d1 = compute_metric(b1_diag) + compute_metric(b2)
@@ -466,7 +390,6 @@ def find_cliques(a):
         else:
             i+=1
 
-    #print(blocks_idx)
     return blocks_idx
 
 def compute_total_score(blocks_idx, bm):
@@ -498,6 +421,7 @@ def plot_results(bin, df, blocks_idx, out_folder, quant, total_score):
 
 def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
 
+  # This can be modified  
   quant_list = [
     #   .50, .55, .56, .57, .58, .59,
     #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
@@ -505,18 +429,7 @@ def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
     #   .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
       .90, .91, .92, .93, .94,
       ]
-  # quant_list = [.95]
-  #out_folder = 'test_thresh'
   
-  #with open('./complete_MI_case14.npy', 'rb') as f:
-  #   a = np.load(f)
-     
-  # displaying the plotted heatmap 
-  # plt.figure(1)
-  # hm = sn.heatmap(data = a, annot=True, cbar=False)
-  # plt.show(block=False)
-
-  # quantile thresh
   env = grid2op.make(env_name)
   idx = []
   n = env.observation_space.n_line
@@ -539,22 +452,7 @@ def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
         thresh = np.quantile(a[:,sub].flatten(), quant)
         bin[:,sub] = a[:,sub]>thresh
 
-    # plt.figure(2)
-    # hm = sn.heatmap(data = bin, annot=True, cbar=False)
-    # plt.title('Binary')
-    # plt.savefig(os.path.join(out_folder, f'bin_{quant}.png'), dpi=200)
-    # plt.close()
-    # plt.show(block=False)
-
     bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, 0.75)
-    
-    # with open('./fin.npy', 'wb') as f:
-    #   np.save(f, bm)
-    # print(blocks)
-
-    # plt.figure(3)
-    # hm = sn.heatmap(data = bdf, annot=True, cbar=False)
-    # plt.show()
       
     blocks_idx = find_cliques(bm)
     total_score = compute_total_score(blocks_idx, bm)
