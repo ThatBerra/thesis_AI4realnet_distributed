@@ -38,7 +38,16 @@ python clustering/synthetic_data.py
 ```commandline
 python clustering/power_grid.py
 ```
-One can modify the two variables `n_episodes` and `n_samples`. The first one is the number of time series that are used in the simulation for collecting the data, the second is the number of samples that are used in the computation of the Mutual Information estimator. The total number of samples collected depends on the survival of the agent in the simulation, if it lower than `n_samples`, the MI is computed on all available samples.
+One can modify the two variables `n_episodes` and `n_samples`. The first one is the number of time series that are used in the simulation for collecting the data, the second is the number of samples that are used in the computation of the Mutual Information estimator. The total number of samples collected depends on the survival of the agent in the simulation, if it lower than `n_samples`, the MI is computed on all available samples. 
+
+#### Reproducing thesis experiment
+To reproduce the results provided in the thesis, use the following settings:
+```commandline
+SEED = 90566
+n_episodes = 100
+n_samples = 1000
+```
+
 #### Disclaimer
 Creating a virtual environment is not strictly necessary. However, due to the fact that in order to properly run the experiment on power grid one needs to modify files in the library, this is strongly suggested, to be sure that grid2op works as intended outside the virtual environment. It is also suggested to install packages from requirements_clust.py, as later versions of grid2op generate conflicts with the two files `aux_fun.py` and `EpisodeData.py`
 
