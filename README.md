@@ -71,5 +71,11 @@ pip install -r requirements.txt
 ```commandline
 python distributed_grid2op/main.py
 ```
+#### Reproducing thesis experiment
+To reproduce the results provided in the thesis, use the following settings:
+```commandline
+SEED = 90566
+```
+`n_iterations` value depends on how much one wants to train its model, we used 100 for the parameter exploration and 25 for the comparison with centralized models.
 
 
