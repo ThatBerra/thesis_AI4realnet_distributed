@@ -399,21 +399,22 @@ def compute_total_score(blocks_idx, bm):
       total_score += compute_metric(block)
     return total_score
 
-def plot_results(bin, df, blocks_idx, out_folder, quant, total_score):
+def plot_results(bin, df, out_folder, quant, blocks_idx, total_score=0):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     sn.heatmap(data = bin, annot=True, cbar=False, ax=ax1)
 
     sn.heatmap(data = df, annot=True, cbar=False, ax=ax2)
 
-    for i, idx_list in enumerate(blocks_idx):
+    '''for i, idx_list in enumerate(blocks_idx):
         ax2.add_patch(Rectangle((idx_list[2], idx_list[0]), idx_list[3]-idx_list[2], idx_list[1]-idx_list[0],
                     edgecolor='red',
                     facecolor='none',
                     lw=2))
-        print(f'Clique {i}: substations {list(df.columns)[idx_list[2]:idx_list[3]]}, lines {list(df.index)[idx_list[0]:idx_list[1]]}')
+        print(f'Clique {i}: substations {list(df.columns)[idx_list[2]:idx_list[3]]}, lines {list(df.index)[idx_list[0]:idx_list[1]]}')'''
 
 
-    plt.suptitle(f'Quant = {quant}, score = {round(total_score,2)}', size=24)
+    #plt.suptitle(f'Quant = {quant}, score = {round(total_score,2)}', size=24)
+    plt.suptitle(f'Quant = {quant}', size=24)
     plt.tight_layout()
     # plt.show()
     plt.savefig(os.path.join(out_folder, f'cliques_{quant}.png'), dpi=200)
@@ -446,12 +447,12 @@ def diagonalize(a, path, quant_list, env_name='l2rpn_case14_sandbox'):
 
     bdf, bm, _, _, _ = block_diagonalization(bin, targets, variables, 0.75)
       
-    blocks_idx = find_cliques(bm)
-    total_score = compute_total_score(blocks_idx, bm)
+    #blocks_idx = find_cliques(bm)
+    #total_score = compute_total_score(blocks_idx, bm)
 
-    plot_results(bin, bdf, blocks_idx, path, quant, total_score)
+    plot_results(bin, bdf, path, quant)
 
-    print(f'Score: {round(total_score,2)}')
+    #print(f'Score: {round(total_score,2)}')
     print()
 
 
