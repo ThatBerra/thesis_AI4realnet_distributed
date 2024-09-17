@@ -44,7 +44,7 @@ One can modify the two variables `n_episodes` and `n_samples`. The first one is 
 To reproduce the results provided in the thesis, use the following settings:
 ```commandline
 SEED = 29
-n_episodes = 100
+n_episodes = 1000
 n_samples = 1000
 ```
 
