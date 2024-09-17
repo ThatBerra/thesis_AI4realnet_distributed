@@ -24,9 +24,9 @@ source venv_clustering/bin/activate
 ```commandline
 pip install -r requirements_clust.txt
 ```
-Replace `grid2op_patch/EpisodeData.py` in `venv_clustering/lib/python3/site-packages/grid2op/Episode/EpisodeData.py`
+Replace `grid2op_patch/EpisodeData.py` in `.../venv_clustering/lib/python3.11/site-packages/grid2op/Episode/EpisodeData.py`
 
-Replace `grid2op_patch/aux_fun.py` in `venv_clustering/lib/python3/site-packages/grid2op/Runner/aux_fun.py`
+Replace `grid2op_patch/aux_fun.py` in `.../venv_clustering/lib/python3.11/site-packages/grid2op/Runner/aux_fun.py`
 
 ### Run experiments
 
