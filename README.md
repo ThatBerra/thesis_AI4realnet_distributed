@@ -1,4 +1,11 @@
-# thesis_AI4realnet_distributed
+# Distributed Reinforcement Learning for Power Grid Operations
+The code on this repository is used to for the research on distributed RL applied to power grid operations. The code is used to run the experiments presented in the Master Thesis [link] carried on at Politecnico di Milano. 
+
+The underlying idea is to decompose the problem by splitting the MDP into sub-problems by estimating Mutual Information between pairs of state and action variables, that are then clustered so that variables that have high correlation with the same ones are grouped together. The code for this part is collected in the `clustering` folder. We made an experiment on a custom made MDP and one on a simple Grid2op environment.
+
+The code in the folder `distributed_grid2op` develops a distributed RL approach in which each sub-problem is handled independently by a dedicated agent.
+
+Below, the instruction for a proper execution.
 
 ## Clustering
 
