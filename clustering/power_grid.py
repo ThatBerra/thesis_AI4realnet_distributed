@@ -26,6 +26,14 @@ if __name__=='__main__':
     n_episodes = 1
     n_samples = 10
 
+    quant_list = [
+    #   .50, .55, .56, .57, .58, .59,
+    #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
+    #   .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
+    #   .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
+      .90, .91, .92, .93, .94,
+    ]
+
     # --------------------------------------------
     
     path = f"./data/{env_name}_{n_episodes}"
@@ -53,9 +61,9 @@ if __name__=='__main__':
             mi[:,sub] = mi_vector[:,n+sub]
 
             shuffled_history = history.copy()
-            np.random.shuffle(shuffled_history[:,:20])
+            np.random.shuffle(shuffled_history[:,:n])
             shuffled_vector, seta = cmi.compute_mi_matrix_parallel(n, m, sub, shuffled_history)
-            shuffled_mi[:,sub] = shuffled_vector[:,20+sub]
+            shuffled_mi[:,sub] = shuffled_vector[:,n+sub]
         
     unbiased_mi = mi - shuffled_mi
 
@@ -68,7 +76,7 @@ if __name__=='__main__':
     with open(os.path.join(path, 'unbiased_mi.npy'), 'wb') as f:
         np.save(f, unbiased_mi)
 
-    bd.diagonalize(unbiased_mi, os.path.join(path, 'diagonalizations'), env_name)
+    bd.diagonalize(unbiased_mi, os.path.join(path, 'diagonalizations'), quant_list, env_name)
 
 
     

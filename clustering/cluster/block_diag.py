@@ -419,16 +419,8 @@ def plot_results(bin, df, blocks_idx, out_folder, quant, total_score):
     plt.savefig(os.path.join(out_folder, f'cliques_{quant}.png'), dpi=200)
     plt.close()
 
-def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
-
-  # This can be modified  
-  quant_list = [
-    #   .50, .55, .56, .57, .58, .59,
-    #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
-    #   .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
-    #   .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
-      .90, .91, .92, .93, .94,
-      ]
+def diagonalize(a, path, quant_list, env_name='l2rpn_case14_sandbox'):
+  os.makedirs(path, exist_ok=True)
   
   env = grid2op.make(env_name)
   idx = []
@@ -459,21 +451,13 @@ def diagonalize(a, path, env_name='l2rpn_case14_sandbox'):
 
     plot_results(bin, bdf, blocks_idx, path, quant, total_score)
 
-
     print(f'Score: {round(total_score,2)}')
     print()
 
 
-def diagonalize_synthetic(a, path):
+def diagonalize_synthetic(a, path, thres_list):
 
   os.makedirs(path, exist_ok=True)
-  thres_list = [
-    #   .50, .55, .56, .57, .58, .59,
-    #   .60, .61, .62, .63, .64, .65, .66, .67, .68, .69, 
-       .70, .71, .72, .73, .74, .75, .76, .77, .78, .79,
-       .80, .81, .82, .83, .84, .85, .86, .86, .88, .89,
-      .90, .91, .92, .93, .94,
-      ]
   
   n = a.shape[0]
   m = a.shape[1]
