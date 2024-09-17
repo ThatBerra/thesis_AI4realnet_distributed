@@ -22,11 +22,11 @@ SEED = 29
 if __name__=='__main__':
 
     #TODO make evident what are the input parameters and what should not be touched
-    # (e.g., you may want to move everything that should be untouched outside of the main)
-       
+    # (e.g., you may want to move everything that should be untouched outside of the main) 
     env_name = 'l2rpn_case14_sandbox'
     n_episodes = 1
     n_samples = 10
+    
     path = f"./data/{env_name}_{n_episodes}"
     env = grid2op.make(env_name)
 

@@ -8,7 +8,7 @@ from utils.custom_gym_actspace import ClusterActionSpace
 
 #TODO: Please make it clear what is taken from the repo of other authors and what is our contribution
 
-def enumerated_product(n_items, items):
+'''def enumerated_product(n_items, items):
     yield from zip(itertools.product(*(range(x) for x in n_items)), itertools.product(*items))
 
 
@@ -241,6 +241,7 @@ class ActionConverter(SimpleDiscActionConverter):
         new_topo = [1] + new_topo.tolist()
         act = self.action_space({"set_bus": {"substations_id": [(sub_id, new_topo)]}})
         return act
+    
 class ObsConverter:
     def __init__(self, env, danger, device, attr=["p_i", "p_l", "r", "o", "d", "m"]):
         self.obs_space = env.observation_space
@@ -355,7 +356,7 @@ class ObsConverter:
         p_forcast_ = torch.zeros(1, self.obs_space.dim_topo)
         p_forcast_[..., self.obs_space.gen_pos_topo_vect] = forecast_prod_p
         p_forcast_[..., self.obs_space.load_pos_topo_vect] = forecast_load_p
-        return p_forcast_.unsqueeze(-1)
+        return p_forcast_.unsqueeze(-1)'''
 
     
 

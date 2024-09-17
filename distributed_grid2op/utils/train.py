@@ -185,6 +185,7 @@ class Trainer():
             
     def learn(self, nb_scenario, callback=None, reset_num_timesteps=True, tb_log_name="OnPolicyAlgorithm", progress_bar=False):
         tic = time.time()
+        n_chronics = len(self.env.chronics_handler.subpaths)
         agent_path = f'data/agents/{self.high_agent.r_seed}/{self.high_agent.agent_type}'
         data_path = f'data/training/{self.high_agent.r_seed}/{self.high_agent.agent_type}'
         
@@ -216,11 +217,7 @@ class Trainer():
 
             self._update_current_progress_remaining(timestep, nb_scenario)
             
-            # Display training infos
-            '''if log_interval is not None and n_episodes % log_interval == 0:
-                self._dump_logs(n_episodes)'''
-            
-            if timestep % 904 == 0:  #TODO: Do not use number here. Use variable instead
+            if timestep % n_chronics == 0: 
                 path = os.path.join(data_path, f'{timestep}')
                 self.save_data(path, tic)
 

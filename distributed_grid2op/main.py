@@ -39,8 +39,6 @@ def safe(obs):
             return False
     return True
 
-#TODO: Remove all useless commented lines from now to till the end of this file
-
 def collect_baseline_data(env, actor, nb_episode):
     safes = []
     overflows = []
@@ -66,9 +64,7 @@ def collect_baseline_data(env, actor, nb_episode):
                 ep_safe += 1
             else: 
                 first_unsafe = True 
-            #if overflow(obs):
-            #    ep_overflow += 1
-                
+
             act = actor.act(obs, reward)
             obs, reward, done, info = env.step(act)
             ep_reward += reward
@@ -78,7 +74,6 @@ def collect_baseline_data(env, actor, nb_episode):
                 print('-------')
                 survived.append(ep_survived)
                 safes.append(ep_safe)
-                #overflows.append(ep_overflow)
                 rewards.append(ep_reward)
                 obs = env.reset()
             else:
@@ -90,7 +85,6 @@ def collect_baseline_data(env, actor, nb_episode):
 
     survived_path = os.path.join(path, 'survived_timesteps.npy')
     safes_path = os.path.join(path, 'safes.npy')
-    #of_path = os.path.join(path, 'overflows.npy')
     reward_path = os.path.join(path, 'rewards.npy')
 
     with open(survived_path, 'wb') as f:
@@ -98,9 +92,6 @@ def collect_baseline_data(env, actor, nb_episode):
 
     with open(safes_path, 'wb') as f:
         np.save(f, safes)
-
-    #with open(of_path, 'wb') as f:
-    #    np.save(f, overflows)
 
     with open(reward_path, 'wb') as f:
         np.save(f, rewards)
@@ -112,7 +103,6 @@ if __name__ == "__main__":
     seed_everything(SEED)
     n_update = 0
 
-    # settings
     model_name = f"Distributed_PPO_{SEED}"
     print("model name: ", model_name)
 
@@ -124,12 +114,10 @@ if __name__ == "__main__":
         print(">> >> using cuda")
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # Define environments
-    #env, test_env, env_path = make_envs(args)
-    # env.seed(9)
     env_name = 'l2rpn_case14_sandbox'
-    #env = grid2op.make(env_name, reward_class=CloseToOverflowReward, backend=LightSimBackend())
 
+    # This will generate the train-validation split in "data_grid2op" folder, execute once the first time
+    # Any new execution will erase data collected in that folder (for example with an EpisodeStatistic run)
     '''try:
         nm_env_train, nm_env_test = env.train_val_split_random(pct_val=10.)
     except Exception as e: 
@@ -137,44 +125,46 @@ if __name__ == "__main__":
         shutil.rmtree("C:\\Users\\david\\data_grid2op\\l2rpn_case14_sandbox_val")
         nm_env_train, nm_env_test = env.train_val_split_random(pct_val=10.)'''
     
-    #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
+    # Choose the type of environment you want to create, remember that LightSimBackend is faster, 
+    # but it does not work on all machines
+    
     env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
+    #env_train = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward)
     
-    #nb_scenario = 112 * len(env_train.chronics_handler.subpaths)
-    nb_scenario = 12 * len(env_train.chronics_handler.subpaths)
+    # modify this variable according to the number of iterations you want to make
+    n_iterations = 25
+    nb_scenario = n_iterations * len(env_train.chronics_handler.subpaths)
 
-    #sub_clusters = [
-    #        [0, 1, 2, 4],
-    #        [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
-    #        ]
+    sub_clusters = [
+            [0, 1, 2, 4],
+            [3, 5, 6, 7, 8, 9, 10, 11, 12, 13]
+            ]
     
-    #line_clusters = [
-    #    [0,1,2,3,4,5,6],
-    #    [7,8,9,10,11,12,13,14,15,16,17,18,19]
-    #]
+    line_clusters = [
+        [0,1,2,3,4,5,6],
+        [7,8,9,10,11,12,13,14,15,16,17,18,19]
+    ]
     
+    '''Uncomment for centralized model
+
     sub_clusters = [
             [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]
             ]
 
     line_clusters = [
         [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19]
-    ]
+    ]'''
     
     
     my_agent = IMARL(env_train, sub_clusters, line_clusters, SEED, **{})
 
-    #my_agent.load_model('distributed_PPO_47008episodes_64\\11752')
+    '''Uncomment if you want to load a particular model from a checkpoint
+
+    checkpoint_path = 'distributed_PPO_47008episodes_64\\11752'
+    my_agent.load_model(checkpoint_path)'''
 
     trainer = Trainer(env_train, my_agent, nb_scenario, SEED)
     trainer.learn(nb_scenario)
-
-    #env_baseline = grid2op.make(env_name+"_train", reward_class=CloseToOverflowReward, backend=LightSimBackend())
-    #baseline_agent = DoNothingAgent(env_baseline.action_space)
-
-    #collect_baseline_data(env_baseline, baseline_agent, nb_scenario)
-
-    
 
 
 

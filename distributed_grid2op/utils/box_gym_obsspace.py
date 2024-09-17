@@ -6,7 +6,12 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of Grid2Op, Grid2Op a testbed platform to model sequential decision making in power systems.
 
-#TODO Please make it clear: why do we need this file from the library? What are our mods and for which purpose?
+'''
+This file contains a class that transforms a grid2op observation into a gym environment observation
+The file has been modified wrt the one in the library so that it provides a gym observation space that is masked
+This is used when creating a Low-Level Cluster Agent, passing the mask corresponding to the cluster
+Observations passed to the agent are automatically masked with this procedure
+'''
 
 from typing import Tuple
 import copy
