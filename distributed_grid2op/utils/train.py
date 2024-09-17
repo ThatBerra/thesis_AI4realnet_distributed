@@ -220,7 +220,7 @@ class Trainer():
             '''if log_interval is not None and n_episodes % log_interval == 0:
                 self._dump_logs(n_episodes)'''
             
-            if timestep % 904 == 0:
+            if timestep % 904 == 0:  #TODO: Do not use number here. Use variable instead
                 path = os.path.join(data_path, f'{timestep}')
                 self.save_data(path, tic)
 

@@ -20,6 +20,9 @@ import cluster.block_diag as bd
 SEED = 29
 
 if __name__=='__main__':
+
+    #TODO make evident what are the input parameters and what should not be touched
+    # (e.g., you may want to move everything that should be untouched outside of the main)
        
     env_name = 'l2rpn_case14_sandbox'
     n_episodes = 1

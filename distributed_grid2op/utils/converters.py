@@ -6,6 +6,7 @@ from grid2op.Converter import Converter
 from utils.box_gym_obsspace import MaskedBoxGymObsSpace
 from utils.custom_gym_actspace import ClusterActionSpace
 
+#TODO: Please make it clear what is taken from the repo of other authors and what is our contribution
 
 def enumerated_product(n_items, items):
     yield from zip(itertools.product(*(range(x) for x in n_items)), itertools.product(*items))

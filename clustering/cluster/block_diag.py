@@ -86,6 +86,7 @@ def has_sparse_border(mat, row_offset, row_idx, col_offset, col_idx, border_type
 def compute_metric(block):
     return np.sum(block) / block.size if block.size > 0 else 0
 
+#TODO: Either clean or remove all of the following functions
 def find_cliques(a):
 
     # plt.figure(5)

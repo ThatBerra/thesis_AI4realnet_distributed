@@ -6,6 +6,8 @@
 # SPDX-License-Identifier: MPL-2.0
 # This file is part of Grid2Op, Grid2Op a testbed platform to model sequential decision making in power systems.
 
+#TODO Please make it clear: why do we need this file from the library? What are our mods and for which purpose?
+
 from typing import Tuple
 import copy
 import warnings

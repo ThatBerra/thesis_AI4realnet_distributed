@@ -39,6 +39,8 @@ def safe(obs):
             return False
     return True
 
+#TODO: Remove all useless commented lines from now to till the end of this file
+
 def collect_baseline_data(env, actor, nb_episode):
     safes = []
     overflows = []

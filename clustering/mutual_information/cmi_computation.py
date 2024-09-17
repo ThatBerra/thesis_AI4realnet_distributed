@@ -25,6 +25,7 @@ def get_relative_indices(state_action, ns, iv, dim_state, dim_action):
   return ns, iv_idx, k_idx
 
 def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
+  #TODO Clean this function
   '''delta = 0.1  
   hoeffding = math.sqrt(math.log(1/delta)/len(history))
   
@@ -95,6 +96,7 @@ def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
   return mi_ns_iv
 
 def compute_cmi_matrix(n, m, history):
+    #TODO: Clean this function
     
     MI = np.zeros((n, n+m))
     history = np.asarray(history)

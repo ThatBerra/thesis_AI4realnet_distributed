@@ -27,6 +27,8 @@ It keeps a relation matrix, at each steps for each state variable it randomly se
 and copies its value.
 ASSUMPTION: state variables and action variables can take values in the same domain
 '''
+
+#TODO change the name of this class
 class FactoredMDP_prof_Env(gymnasium.Env):
 
   def __init__(self, relation_matrix, n, m, horizon, state_range, action_range):
@@ -241,6 +243,7 @@ def get_relative_indices(state_action, ns, iv, dim_state, dim_action):
   return ns, iv_idx, k_idx
 
 def compute_MI_entry(iv_label, ns_idx, iv_idx, n, m, history):
+  #TODO Clean this function
   '''delta = 0.1  
   hoeffding = math.sqrt(math.log(1/delta)/len(history))
   
@@ -353,6 +356,8 @@ def compute_mi_matrix_parallel(n, m, history):
     return MI, t   
 
 if __name__=='__main__':
+    
+    #TODO Remove comments. Make clear the distinction between input parameters and what should not be touched
     
     #with open('cmi_custom1_cont_mixture_3_10M.npy', 'rb') as f:
         #cmi_m = np.load(f)
