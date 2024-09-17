@@ -23,8 +23,8 @@ if __name__=='__main__':
 
     # Inputs: modify as will
     env_name = 'l2rpn_case14_sandbox'
-    n_episodes = 1
-    n_samples = 10
+    n_episodes = 1000
+    n_samples = 1000
 
     quant_list = [
     #   .50, .55, .56, .57, .58, .59,
