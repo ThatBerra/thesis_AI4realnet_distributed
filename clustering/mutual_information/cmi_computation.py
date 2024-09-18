@@ -77,7 +77,7 @@ def compute_mi_matrix_parallel(n, m, sub, history):
 
     st = time.time()
 
-    pool = mp.Pool(55)
+    pool = mp.Pool(mp.cpu_count)
 
     #env = grid2op.make('l2rpn_case14_sandbox')
     #env = grid2op.make('l2rpn_wcci_2022')

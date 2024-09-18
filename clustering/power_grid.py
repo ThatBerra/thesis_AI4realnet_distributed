@@ -18,6 +18,7 @@ import os
 import cluster.block_diag as bd
 
 SEED = 29
+np.random.seed(SEED)
 
 if __name__=='__main__':
 
