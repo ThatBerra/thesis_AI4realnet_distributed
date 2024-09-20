@@ -48,7 +48,8 @@ def fetch(env, num_samples, path):
     curr_state = []
     actions = []
 
-    runner_path = os.path.join(path, 'runs')
+    #runner_path = os.path.join(path, 'runs')
+    runner_path = path
     list_dir = os.listdir(runner_path)
     num_folders = len(list_dir)
 
@@ -120,7 +121,7 @@ def fetch(env, num_samples, path):
     curr_state = np.array(curr_state)
 
     history = np.append(next_state, curr_state, axis=1)
-    history = np.append(history, actions_by_sub,axis=1)
+    history = np.append(history, actions_by_sub, axis=1)
 
     print(history.shape)
 

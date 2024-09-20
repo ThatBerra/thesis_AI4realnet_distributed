@@ -6,4 +6,5 @@
 *.zip
 *.csv
 *.png
+/data/*
 

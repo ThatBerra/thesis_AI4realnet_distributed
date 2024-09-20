@@ -399,7 +399,7 @@ def compute_total_score(blocks_idx, bm):
       total_score += compute_metric(block)
     return total_score
 
-def plot_results(bin, df, out_folder, quant, blocks_idx, total_score=0):
+def plot_results(bin, df, out_folder, quant):
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     sn.heatmap(data = bin, annot=True, cbar=False, ax=ax1)
 
