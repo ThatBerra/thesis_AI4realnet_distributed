@@ -15,7 +15,6 @@ from stable_baselines3.common import utils
 from stable_baselines3.common.utils import obs_as_tensor, safe_mean
 from stable_baselines3.common.logger import Logger
 
-from Agents.HigLevel import IMARL
 
 
 class Trainer():

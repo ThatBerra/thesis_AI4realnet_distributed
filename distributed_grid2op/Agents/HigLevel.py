@@ -7,7 +7,7 @@ from Agents.MiddleAgent import RuleBasedSubPicker
 
 import utils.converters as converters
 
-class IMARL(L2rpnAgent):
+class HigLevelAgent(L2rpnAgent):
     """
     High Lecel agent that coordinates the low level agents
     """
@@ -113,7 +113,7 @@ class IMARL(L2rpnAgent):
         [agent.load_model(f"{path}", f"cluster_{sub}") for sub, agent in enumerate(self.agents)]
 
 
-class IMARL_complete_obs(L2rpnAgent):
+class HighLevelAgent_complete_obs(L2rpnAgent):
     """
     High Lecel agent that coordinates the low level agents
     """

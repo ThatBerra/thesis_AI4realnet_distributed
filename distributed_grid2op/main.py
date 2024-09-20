@@ -9,7 +9,7 @@ from lightsim2grid import LightSimBackend
 from grid2op.Reward import CloseToOverflowReward
 from grid2op.Agent import DoNothingAgent
 
-from Agents.HigLevel import IMARL, IMARL_complete_obs
+from Agents.HigLevel import HigLevelAgent, HighLevelAgent_complete_obs
 from utils.train import Trainer
 
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
     
     nb_scenario = n_iterations * len(env_train.chronics_handler.subpaths)
     
-    my_agent = IMARL(env_train, sub_clusters, line_clusters, SEED, **{})
+    my_agent = HigLevelAgent(env_train, sub_clusters, line_clusters, SEED, **{})
 
     '''Uncomment if you want to load a particular model from a checkpoint
 
