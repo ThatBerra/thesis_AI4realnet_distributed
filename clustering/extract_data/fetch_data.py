@@ -52,6 +52,7 @@ def fetch(env, num_samples, path):
     runner_path = path
     list_dir = os.listdir(runner_path)
     num_folders = len(list_dir)
+    
 
     st_time = time.time()
     print(f"\nPath = {runner_path}. Reading data from {num_folders} folders")
@@ -60,7 +61,7 @@ def fetch(env, num_samples, path):
         for dire in list_dir:
 
             d_path = os.path.join(runner_path, dire)
-            
+
             if os.path.isdir(d_path):
                 o_path = os.path.join(d_path, 'observations.npz')
                 a_path = os.path.join(d_path, 'actions.npz')
@@ -94,7 +95,7 @@ def fetch(env, num_samples, path):
 
     n_sub = len(connections)
     actions = np.array(actions)
-
+    
     H = actions.shape[0]
 
     actions_by_sub = np.zeros((H,n_sub))

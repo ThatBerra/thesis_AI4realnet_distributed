@@ -79,10 +79,6 @@ def compute_mi_matrix_parallel(n, m, sub, history):
 
     pool = mp.Pool(int(mp.cpu_count()/2))
 
-    #env = grid2op.make('l2rpn_case14_sandbox')
-    #env = grid2op.make('l2rpn_wcci_2022')
-    #connections = env.action_space.sub_info
-
     args_list = []
     for ns in range(n):
         #iv_label = 'state'

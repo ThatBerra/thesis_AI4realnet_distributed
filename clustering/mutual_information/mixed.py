@@ -22,21 +22,20 @@ def Mixed_KSG(x,y,k=5):
 	tree_y = ss.cKDTree(y)
 
 	knn_dis, _ = tree_xy.query(data, [k+1], p=float('inf'))
-	knn_dis = np.squeeze(knn_dis)
+	knn_dis = np.squeeze(knn_dis) 
 	ans = 0
 
 	for i in range(N):
-            kp, nx, ny = k, k, k
-            if knn_dis[i] == 0:
-                kp = len(tree_xy.query_ball_point(data[i],1e-30,p=float('inf')))
-                nx = len(tree_x.query_ball_point(x[i],1e-30,p=float('inf')))
-                ny = len(tree_y.query_ball_point(y[i],1e-30,p=float('inf')))
-            else:
-                nx = len(tree_x.query_ball_point(x[i],knn_dis[i]-1e-30,p=float('inf')))
-                ny = len(tree_y.query_ball_point(y[i],knn_dis[i]-1e-30,p=float('inf')))
-                ans += (digamma(kp) + log(N) - digamma(nx) - digamma(ny))/N
-
-            return ans
+		kp, nx, ny = k, k, k
+		if knn_dis[i] == 0:
+			kp = len(tree_xy.query_ball_point(data[i],1e-20,p=float('inf')))
+			nx = len(tree_x.query_ball_point(x[i],1e-20,p=float('inf')))
+			ny = len(tree_y.query_ball_point(y[i],1e-20,p=float('inf')))
+		else:
+			nx = len(tree_x.query_ball_point(x[i],knn_dis[i]-1e-20,p=float('inf')))
+			ny = len(tree_y.query_ball_point(y[i],knn_dis[i]-1e-20,p=float('inf')))
+		ans += (digamma(kp) + log(N) - digamma(nx) - digamma(ny))/N
+	return ans
 
 
 
