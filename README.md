@@ -45,7 +45,7 @@ To reproduce the results provided in the thesis, use the following settings:
 ```commandline
 SEED = 29
 n_episodes = 1000
-n_samples = 1000
+n_samples = 50000
 ```
 
 #### Disclaimer
