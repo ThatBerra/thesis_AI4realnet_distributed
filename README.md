@@ -47,6 +47,8 @@ SEED = 29
 n_episodes = 1000
 n_samples = 50000
 ```
+Tested on Ubuntu 18.04.6 LTS | RAM 8GB | Intel® Core™ i7-8750H CPU @ 2.20GHz × 12 
+Running time: ~1h on 6 cores
 
 #### Disclaimer
 Creating a virtual environment is not strictly necessary. However, due to the fact that in order to properly run the experiment on power grid one needs to modify files in the library, this is strongly suggested, to be sure that grid2op works as intended outside the virtual environment. It is also suggested to install packages from requirements_clust.py, as later versions of grid2op generate conflicts with the two files `aux_fun.py` and `EpisodeData.py`
